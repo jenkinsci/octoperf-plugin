@@ -130,6 +130,12 @@
 		</developer>
 	</developers>
 
+	<scm>
+		<connection>scm:git:ssh://github.com/octoperf/octoperf-jenkins-plugin.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/octoperf/octoperf-jenkins-plugin.git</developerConnection>
+		<url>https://github.com/octoperf/octoperf-jenkins-plugin</url>
+	</scm>
+
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
