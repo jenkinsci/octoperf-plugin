@@ -1,7 +1,5 @@
 package org.jenkinsci.plugins.octoperf.report;
 
-import org.jenkinsci.plugins.octoperf.scenario.BenchReport;
-
 final class RestBenchReportService implements BenchReportService {
   
   private static final String REPORT_URL = "https://app.octoperf.com/#/app/project/%s/analysis/%s/%s";

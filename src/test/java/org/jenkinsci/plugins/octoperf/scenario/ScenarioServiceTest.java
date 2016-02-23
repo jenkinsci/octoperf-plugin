@@ -11,6 +11,8 @@ import static org.mockito.Mockito.when;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.project.ProjectApi;
 import org.jenkinsci.plugins.octoperf.project.ProjectTest;
+import org.jenkinsci.plugins.octoperf.report.BenchReport;
+import org.jenkinsci.plugins.octoperf.report.BenchReportTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

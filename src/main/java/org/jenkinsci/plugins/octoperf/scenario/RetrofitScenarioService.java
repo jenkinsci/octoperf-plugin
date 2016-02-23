@@ -5,6 +5,7 @@ import static org.jenkinsci.plugins.octoperf.project.ProjectService.PROJECTS;
 import java.util.List;
 
 import org.jenkinsci.plugins.octoperf.project.Project;
+import org.jenkinsci.plugins.octoperf.report.BenchReport;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;

@@ -1,7 +1,5 @@
 package org.jenkinsci.plugins.octoperf.report;
 
-import org.jenkinsci.plugins.octoperf.scenario.BenchReport;
-
 public interface BenchReportService {
 
   BenchReportService BENCH_REPORTS = new RestBenchReportService();

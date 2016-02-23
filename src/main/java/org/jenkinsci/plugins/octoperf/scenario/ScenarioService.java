@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
 import org.jenkinsci.plugins.octoperf.project.Project;
+import org.jenkinsci.plugins.octoperf.report.BenchReport;
 
 import com.google.common.collect.Multimap;
 
