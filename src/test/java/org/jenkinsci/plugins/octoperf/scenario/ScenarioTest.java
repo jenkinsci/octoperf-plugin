@@ -34,7 +34,7 @@ public class ScenarioTest {
   }
   
   public static Scenario newInstance() {
-    return new Scenario("id", "projectId", "name");
+    return new Scenario("id", "projectId", "name", "description");
   }
   
 }

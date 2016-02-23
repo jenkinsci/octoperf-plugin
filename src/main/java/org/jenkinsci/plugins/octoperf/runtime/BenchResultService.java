@@ -12,15 +12,22 @@ public interface BenchResultService {
    * @param scenarioId scenario id
    * @return the test currently running
    */
-  BenchResult startTest(RestAdapter adapter, String scenarioId);
+  BenchReport startTest(RestAdapter adapter, String scenarioId);
+  
+  /**
+   * Finds a bench result by its id.
+   * @param id bench result id 
+   * @return
+   */
+  BenchResult find(RestAdapter adapter, String benchResultId);
   
   /**
    * Refreshed the state of the given benchresult.
    * 
-   * @param result
+   * @param benchResultId bench result id
    * @return
    */
-  BenchResult refresh(RestAdapter adapter, BenchResult result);
+  BenchResultState getState(RestAdapter adapter, String benchResultId);
   
   /**
    * Returns true when the bench result is finished.

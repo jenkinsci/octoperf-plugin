@@ -7,7 +7,7 @@ import retrofit.http.Path;
 public interface BenchResultApi {
 
   @POST("/api/scenario/run/{id}")
-  BenchResult run(@Path("id") String scenarioId);
+  BenchReport run(@Path("id") String scenarioId);
 
   @GET("/bench/result/find/{id}")
   BenchResult find(@Path("id") String id);

@@ -10,6 +10,15 @@ public interface ScenarioService {
   ScenarioService SCENARIOS = new RetrofitScenarioService();
   
   /**
+   * Finds a single scenario by id.
+   * 
+   * @param adapter
+   * @param id
+   * @return
+   */
+  Scenario find(RestAdapter adapter, String id);
+  
+  /**
    * Returns the scenarios per project.
    * 
    * @param adapter 

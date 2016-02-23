@@ -1,8 +1,9 @@
-package org.jenkinsci.plugins.octoperf.report;
+package org.jenkinsci.plugins.octoperf.runtime;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.junit.Assert.assertNotNull;
 
+import org.jenkinsci.plugins.octoperf.runtime.BenchReport;
 import org.junit.Test;
 
 import com.google.common.testing.NullPointerTester;
@@ -34,7 +35,7 @@ public class BenchReportTest {
   }
   
   public static BenchReport newInstance() {
-    return new BenchReport("id", "name");
+    return new BenchReport("id", "projectId", "benchResultId", "name");
   }
   
 }

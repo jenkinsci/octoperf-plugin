@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -46,11 +47,20 @@ public class ScenarioServiceTest {
   }
   
   @Test
+  public void shouldFind() {
+    when(api.find(SCENARIO.getId())).thenReturn(SCENARIO);
+    SCENARIOS.find(adapter, SCENARIO.getId());
+    verify(adapter).create(ScenarioApi.class);
+    verify(api).find(SCENARIO.getId());
+  }
+  
+  @Test
   public void shouldListScenariosPerProject() {
     when(api.list(SCENARIO.getProjectId())).thenReturn(ImmutableList.of(SCENARIO));
-    final Multimap<Project, Scenario> multimap = RetrofitScenarioService.SCENARIOS.getScenariosByProject(adapter);
+    final Multimap<Project, Scenario> multimap = SCENARIOS.getScenariosByProject(adapter);
     assertFalse(multimap.isEmpty());
     verify(projectApi).getProjects();
+    verify(adapter).create(ScenarioApi.class);
     verify(api).list(anyString());
   }
   

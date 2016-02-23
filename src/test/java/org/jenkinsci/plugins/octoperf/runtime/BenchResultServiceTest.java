@@ -23,6 +23,7 @@ public class BenchResultServiceTest {
   private static final String SCENARIO_ID = "scenarioId";
 
   private static final BenchResult BENCHRESULT = BenchResultTest.newInstance();
+  private static final BenchReport BENCH_REPORT = BenchReportTest.newInstance();
   
   @Mock
   RestAdapter adapter;
@@ -41,17 +42,17 @@ public class BenchResultServiceTest {
   
   @Test
   public void shouldRun() {
-    when(api.run(SCENARIO_ID)).thenReturn(BENCHRESULT);
-    final BenchResult result = BENCH_RESULTS.startTest(adapter, SCENARIO_ID);
-    assertSame(BENCHRESULT, result);
+    when(api.run(SCENARIO_ID)).thenReturn(BENCH_REPORT);
+    final BenchReport report = BENCH_RESULTS.startTest(adapter, SCENARIO_ID);
+    assertSame(BENCH_REPORT, report);
     verify(api).run(SCENARIO_ID);
   }
   
   @Test
   public void shouldRefresh() {
     when(api.find(BENCHRESULT.getId())).thenReturn(BENCHRESULT);
-    final BenchResult refreshed = BENCH_RESULTS.refresh(adapter, BENCHRESULT);
-    assertSame(BENCHRESULT, refreshed);
+    final BenchResultState refreshed = BENCH_RESULTS.getState(adapter, BENCHRESULT.getId());
+    assertSame(BENCHRESULT.getState(), refreshed);
     verify(api).find(BENCHRESULT.getId());
   }
   

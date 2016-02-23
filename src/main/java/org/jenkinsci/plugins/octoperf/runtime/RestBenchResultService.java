@@ -5,15 +5,21 @@ import retrofit.RestAdapter;
 final class RestBenchResultService implements BenchResultService {
 
   @Override
-  public BenchResult startTest(final RestAdapter adapter, final String scenarioId) {
+  public BenchReport startTest(final RestAdapter adapter, final String scenarioId) {
     final BenchResultApi api = adapter.create(BenchResultApi.class);
     return api.run(scenarioId);
   }
 
   @Override
-  public BenchResult refresh(final RestAdapter adapter, final BenchResult result) {
+  public BenchResultState getState(final RestAdapter adapter, final String benchResultId) {
+    final BenchResult result = find(adapter, benchResultId);
+    return result.getState();
+  }
+  
+  @Override
+  public BenchResult find(final RestAdapter adapter, final String benchResultId) {
     final BenchResultApi api = adapter.create(BenchResultApi.class);
-    return api.find(result.getId());
+    return api.find(benchResultId);
   }
 
   @Override

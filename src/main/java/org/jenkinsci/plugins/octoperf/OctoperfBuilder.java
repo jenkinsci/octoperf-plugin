@@ -13,6 +13,8 @@ import static org.jenkinsci.plugins.octoperf.report.BenchReportService.BENCH_REP
 import static org.jenkinsci.plugins.octoperf.runtime.BenchResultService.BENCH_RESULTS;
 import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.ABORTED;
 import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.ERROR;
+import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.PENDING;
+import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.joda.time.format.DateTimeFormat.forPattern;
 
 import java.io.IOException;
@@ -21,9 +23,10 @@ import java.io.PrintStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
-import org.jenkinsci.plugins.octoperf.report.BenchReport;
+import org.jenkinsci.plugins.octoperf.runtime.BenchReport;
 import org.jenkinsci.plugins.octoperf.runtime.BenchResult;
 import org.jenkinsci.plugins.octoperf.runtime.BenchResultState;
+import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormatter;
@@ -82,42 +85,43 @@ public class OctoperfBuilder extends Builder {
     logger.println("API url: " + apiUrl);
     
     logger.println("Logging in..");
-    final RestAdapter login;
+    final RestAdapter adapter;
     try {
       final Pair<RestAdapter, RestClientAuthenticator> pair = CLIENTS.create(apiUrl);
-      login = ACCOUNTS.login(pair, creds.getUsername(), creds.getPassword().getPlainText());
+      adapter = ACCOUNTS.login(pair, creds.getUsername(), creds.getPassword().getPlainText());
       logger.println("Successfully logged in!");
     } catch(final RetrofitError e) {
       logger.println("Login failed: " + String.valueOf(e));
       return false;
     }
     
-    logger.println("Launching scenario with id: " + scenarioId);
-    BenchResult result;
+    final Scenario scenario = SCENARIOS.find(adapter, scenarioId);
+    logger.println("Launching scenario with:");
+    logger.println("- name: " + scenario.getName() + ",");
+    logger.println("- description: " + scenario.getDescription());
+    
+    BenchReport report;
     try {
-      result = BENCH_RESULTS.startTest(login, scenarioId);
+      report = BENCH_RESULTS.startTest(adapter, scenarioId);
       logger.println("The scenario has been successfully scheduled for execution!");
+      logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(report));
     } catch(final RetrofitError e) {
       logger.println("Could not start test: " + String.valueOf(e));
       return false;
     }
     
+    final BenchResult result = BENCH_RESULTS.find(adapter, report.getBenchResultId());
     final Duration duration = Duration.millis(result.getDurationInMs());
     logger.println("Expected test duration: " + duration.toPeriod());
     
-    logger.println("Creating bench report...");
-    final BenchReport report = BENCH_REPORTS.createReport(login, result);
-    logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(result, report));
-    
     logger.println("Launching test..");
-    BenchResultState currentState = result.getState();
+    BenchResultState currentState = PENDING;
     
     Optional<DateTime> startTime = Optional.absent();
     while(true) {
       Thread.sleep(10000);
       
-      result = BENCH_RESULTS.refresh(login, result);
-      currentState = result.getState();
+      currentState = BENCH_RESULTS.getState(adapter, report.getBenchResultId());
       
       if(currentState.isRunning()) {
         final DateTime now = DateTime.now();
@@ -125,7 +129,7 @@ public class OctoperfBuilder extends Builder {
           startTime = Optional.of(now);
         }
         
-        final MetricValues metrics = METRICS.getMetrics(login, result.getId());
+        final MetricValues metrics = METRICS.getMetrics(adapter, result.getId());
         final String printable = METRICS.toPrintable(startTime.get(), metrics);
         logger.println(DATE_FORMAT.print(now) + " - " + printable);
         
@@ -140,11 +144,11 @@ public class OctoperfBuilder extends Builder {
     final FilePath workspace = build.getWorkspace();
     
     logger.println("Saving JUnit report...");
-    final FilePath junitReport = JUNIT_REPORTS.saveJUnitReport(workspace, login, result.getId());
+    final FilePath junitReport = JUNIT_REPORTS.saveJUnitReport(workspace, adapter, result.getId());
     logger.println("JUnit report saved to: " + junitReport);
     
     logger.println("Downloading JMeter log files...");
-    LOGS.downloadLogFiles(workspace, logger, login, result.getId());
+    LOGS.downloadLogFiles(workspace, logger, adapter, result.getId());
     
     if(currentState == ERROR) {
       build.setResult(Result.FAILURE);

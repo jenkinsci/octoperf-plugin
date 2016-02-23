@@ -13,17 +13,20 @@ import lombok.Value;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Scenario {
   String id;
-  final String projectId;
-  final String name;
+  String projectId;
+  String name;
+  String description;
   
   @JsonCreator
   Scenario(
       @JsonProperty("id") final String id,
       @JsonProperty("projectId") final String projectId,
-      @JsonProperty("name") final String name) {
+      @JsonProperty("name") final String name,
+      @JsonProperty("description") final String description) {
     super();
     this.id = checkNotNull(id);
     this.projectId = checkNotNull(projectId);
     this.name = checkNotNull(name);
+    this.description = checkNotNull(description);
   }
 }
