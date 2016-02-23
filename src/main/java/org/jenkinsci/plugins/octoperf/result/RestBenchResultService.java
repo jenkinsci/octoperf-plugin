@@ -1,14 +1,8 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.result;
 
 import retrofit.RestAdapter;
 
 final class RestBenchResultService implements BenchResultService {
-
-  @Override
-  public BenchReport startTest(final RestAdapter adapter, final String scenarioId) {
-    final BenchResultApi api = adapter.create(BenchResultApi.class);
-    return api.run(scenarioId);
-  }
 
   @Override
   public BenchResultState getState(final RestAdapter adapter, final String benchResultId) {

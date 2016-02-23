@@ -10,6 +10,15 @@ public interface ScenarioService {
   ScenarioService SCENARIOS = new RetrofitScenarioService();
   
   /**
+   * Launches the test on Octoperf's load testing platform.
+   * 
+   * @param adapter rest adapter already logged in
+   * @param scenarioId scenario id
+   * @return the test currently running
+   */
+  BenchReport startTest(RestAdapter adapter, String scenarioId);
+  
+  /**
    * Finds a single scenario by id.
    * 
    * @param adapter

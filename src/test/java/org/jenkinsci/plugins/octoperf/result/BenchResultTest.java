@@ -1,12 +1,13 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.result;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
-import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.ABORTED;
-import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.FINISHED;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ABORTED;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.FINISHED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
+import org.jenkinsci.plugins.octoperf.result.BenchResult;
 import org.junit.Test;
 
 import com.google.common.testing.NullPointerTester;

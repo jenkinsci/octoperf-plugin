@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.result;
 
 
 

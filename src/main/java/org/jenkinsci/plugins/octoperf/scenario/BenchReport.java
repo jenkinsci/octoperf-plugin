@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.scenario;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

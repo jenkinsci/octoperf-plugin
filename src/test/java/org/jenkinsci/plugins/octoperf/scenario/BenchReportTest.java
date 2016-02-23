@@ -1,9 +1,9 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.scenario;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.junit.Assert.assertNotNull;
 
-import org.jenkinsci.plugins.octoperf.runtime.BenchReport;
+import org.jenkinsci.plugins.octoperf.scenario.BenchReport;
 import org.junit.Test;
 
 import com.google.common.testing.NullPointerTester;

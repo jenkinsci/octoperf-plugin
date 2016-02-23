@@ -1,6 +1,6 @@
 package org.jenkinsci.plugins.octoperf.report;
 
-import org.jenkinsci.plugins.octoperf.runtime.BenchReport;
+import org.jenkinsci.plugins.octoperf.scenario.BenchReport;
 
 final class RestBenchReportService implements BenchReportService {
   

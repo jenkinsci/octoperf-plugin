@@ -1,9 +1,10 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.result;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.jenkinsci.plugins.octoperf.result.BenchResult;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

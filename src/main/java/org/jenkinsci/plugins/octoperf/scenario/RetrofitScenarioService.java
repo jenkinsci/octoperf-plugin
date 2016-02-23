@@ -14,6 +14,12 @@ import retrofit.RestAdapter;
 final class RetrofitScenarioService implements ScenarioService {
 
   @Override
+  public BenchReport startTest(final RestAdapter adapter, final String scenarioId) {
+    final ScenarioApi api = adapter.create(ScenarioApi.class);
+    return api.run(scenarioId);
+  }
+  
+  @Override
   public Scenario find(final RestAdapter adapter, final String id) {
     final ScenarioApi api = adapter.create(ScenarioApi.class);
     return api.find(id);

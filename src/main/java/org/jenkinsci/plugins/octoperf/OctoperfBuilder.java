@@ -10,10 +10,10 @@ import static org.jenkinsci.plugins.octoperf.junit.JUnitReportService.JUNIT_REPO
 import static org.jenkinsci.plugins.octoperf.log.LogService.LOGS;
 import static org.jenkinsci.plugins.octoperf.metrics.MetricsService.METRICS;
 import static org.jenkinsci.plugins.octoperf.report.BenchReportService.BENCH_REPORTS;
-import static org.jenkinsci.plugins.octoperf.runtime.BenchResultService.BENCH_RESULTS;
-import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.ABORTED;
-import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.ERROR;
-import static org.jenkinsci.plugins.octoperf.runtime.BenchResultState.PENDING;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ABORTED;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ERROR;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.PENDING;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.joda.time.format.DateTimeFormat.forPattern;
 
@@ -23,9 +23,9 @@ import java.io.PrintStream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
-import org.jenkinsci.plugins.octoperf.runtime.BenchReport;
-import org.jenkinsci.plugins.octoperf.runtime.BenchResult;
-import org.jenkinsci.plugins.octoperf.runtime.BenchResultState;
+import org.jenkinsci.plugins.octoperf.result.BenchResult;
+import org.jenkinsci.plugins.octoperf.result.BenchResultState;
+import org.jenkinsci.plugins.octoperf.scenario.BenchReport;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -102,7 +102,7 @@ public class OctoperfBuilder extends Builder {
     
     BenchReport report;
     try {
-      report = BENCH_RESULTS.startTest(adapter, scenarioId);
+      report = SCENARIOS.startTest(adapter, scenarioId);
       logger.println("The scenario has been successfully scheduled for execution!");
       logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(report));
     } catch(final RetrofitError e) {

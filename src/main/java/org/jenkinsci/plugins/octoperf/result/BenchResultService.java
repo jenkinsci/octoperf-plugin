@@ -1,18 +1,9 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.result;
 
 import retrofit.RestAdapter;
 
 public interface BenchResultService {
   static BenchResultService BENCH_RESULTS = new RestBenchResultService();
-  
-  /**
-   * Launches the test on Octoperf's load testing platform.
-   * 
-   * @param adapter rest adapter already logged in
-   * @param scenarioId scenario id
-   * @return the test currently running
-   */
-  BenchReport startTest(RestAdapter adapter, String scenarioId);
   
   /**
    * Finds a bench result by its id.

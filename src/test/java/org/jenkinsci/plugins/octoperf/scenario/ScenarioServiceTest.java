@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.octoperf.scenario;
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,8 @@ import retrofit.RestAdapter;
 public class ScenarioServiceTest {
   
   private static final Scenario SCENARIO = ScenarioTest.newInstance();
+  private static final String SCENARIO_ID = "scenarioId";
+  private static final BenchReport BENCH_REPORT = BenchReportTest.newInstance();
   
   @Mock
   RestAdapter adapter;
@@ -39,6 +42,14 @@ public class ScenarioServiceTest {
     when(adapter.create(ScenarioApi.class)).thenReturn(api);
     when(adapter.create(ProjectApi.class)).thenReturn(projectApi);
     when(projectApi.getProjects()).thenReturn(ImmutableList.of(ProjectTest.newInstance()));
+  }
+  
+  @Test
+  public void shouldRun() {
+    when(api.run(SCENARIO_ID)).thenReturn(BENCH_REPORT);
+    final BenchReport report = SCENARIOS.startTest(adapter, SCENARIO_ID);
+    assertSame(BENCH_REPORT, report);
+    verify(api).run(SCENARIO_ID);
   }
   
   @Test

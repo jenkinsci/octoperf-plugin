@@ -3,8 +3,8 @@ package org.jenkinsci.plugins.octoperf.report;
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.junit.Assert.assertEquals;
 
-import org.jenkinsci.plugins.octoperf.runtime.BenchReport;
-import org.jenkinsci.plugins.octoperf.runtime.BenchReportTest;
+import org.jenkinsci.plugins.octoperf.scenario.BenchReport;
+import org.jenkinsci.plugins.octoperf.scenario.BenchReportTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

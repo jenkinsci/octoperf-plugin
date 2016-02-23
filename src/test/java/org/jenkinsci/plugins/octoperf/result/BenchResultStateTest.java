@@ -1,7 +1,8 @@
-package org.jenkinsci.plugins.octoperf.runtime;
+package org.jenkinsci.plugins.octoperf.result;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.jenkinsci.plugins.octoperf.result.BenchResultState;
 import org.junit.Test;
 
 public class BenchResultStateTest {
