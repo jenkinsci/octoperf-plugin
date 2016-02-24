@@ -73,8 +73,8 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   /**
    * Computes the scenarios list when asked by the UI.
    * 
-   * @param scope
-   * @return
+   * @param credentialsId credentials id
+   * @return combo box model with all scenarios
    */
   public ListBoxModel doFillScenarioIdItems(final @QueryParameter("credentialsId") String credentialsId) {
     final Optional<OctoperfCredential> optional;

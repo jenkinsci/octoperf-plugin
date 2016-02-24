@@ -3,7 +3,7 @@ package org.jenkinsci.plugins.octoperf.result;
 import retrofit.http.GET;
 import retrofit.http.Path;
 
-public interface BenchResultApi {
+interface BenchResultApi {
 
   @GET("/bench/result/find/{id}")
   BenchResult find(@Path("id") String id);

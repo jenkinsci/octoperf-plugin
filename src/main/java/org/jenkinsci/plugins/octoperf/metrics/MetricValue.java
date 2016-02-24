@@ -7,6 +7,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Value;
 
+/**
+ * Single metric value. Example: Avg Elapsedtime: 5.6s.
+ * 
+ * @author jerome
+ *
+ */
 @Value
 public class MetricValue {
   String name;

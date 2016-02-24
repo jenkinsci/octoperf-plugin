@@ -6,6 +6,9 @@ import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import retrofit.RestAdapter;
 
 public interface AccountService {
+  /**
+   * 
+   */
   AccountService ACCOUNTS = new RetrofitAccountService();
   
   /**

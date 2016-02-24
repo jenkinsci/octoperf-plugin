@@ -12,7 +12,7 @@ import retrofit.http.POST;
  * @author jerome
  *
  */
-public interface AccountApi {
+interface AccountApi {
 
   /**
    * Logs in the user and sends back {@link CredentialsDTO} if login is successful.

@@ -7,7 +7,16 @@ import com.google.common.collect.Multimap;
 
 import retrofit.RestAdapter;
 
+/**
+ * Provides common operations on scenarios.
+ * 
+ * @author jerome
+ *
+ */
 public interface ScenarioService {
+  /**
+   * {@link ScenarioService} singleton instance.
+   */
   ScenarioService SCENARIOS = new RetrofitScenarioService();
   
   /**
@@ -22,17 +31,17 @@ public interface ScenarioService {
   /**
    * Finds a single scenario by id.
    * 
-   * @param adapter
-   * @param id
-   * @return
+   * @param adapter rest adapter
+   * @param id scenario id
+   * @return the scenario when found
    */
   Scenario find(RestAdapter adapter, String id);
   
   /**
    * Returns the scenarios per project.
    * 
-   * @param adapter 
-   * @return
+   * @param adapter rest adapter
+   * @return project to scenarios multimap
    */
   Multimap<Project, Scenario> getScenariosByProject(RestAdapter adapter);
 }

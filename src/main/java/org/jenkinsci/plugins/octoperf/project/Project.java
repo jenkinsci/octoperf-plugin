@@ -9,6 +9,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 
+/**
+ * A project encloses virtual users, scenarios and test results.
+ * 
+ * @author jerome
+ *
+ */
 @Value
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Project {

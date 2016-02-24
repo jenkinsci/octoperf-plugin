@@ -8,6 +8,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Value;
 
+/**
+ * A bench report is attached to a given bench result, 
+ * in a given project.
+ * 
+ * @author jerome
+ *
+ */
 @Value
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class BenchReport {

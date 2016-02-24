@@ -7,7 +7,7 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
-public interface LogApi {
+interface LogApi {
 
   @GET("/logs/{benchResultId}")
   Set<String> getFiles(@Path("benchResultId") String benchResultId);

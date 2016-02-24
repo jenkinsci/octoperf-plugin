@@ -7,7 +7,9 @@ import hudson.FilePath;
 import retrofit.RestAdapter;
 
 public interface LogService {
-  
+  /**
+   * Singleton {@link LogService} instance.
+   */
   LogService LOGS = new JMeterLogService();
   
   /**

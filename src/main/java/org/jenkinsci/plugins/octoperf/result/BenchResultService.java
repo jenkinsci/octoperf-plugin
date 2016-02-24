@@ -1,14 +1,25 @@
 package org.jenkinsci.plugins.octoperf.result;
 
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 
+/**
+ * Provides common operations on {@link BenchResult}.
+ * 
+ * @author jerome
+ *
+ */
 public interface BenchResultService {
+  /**
+   * {@link BenchResultService} singleton instance.
+   */
   static BenchResultService BENCH_RESULTS = new RestBenchResultService();
   
   /**
    * Finds a bench result by its id.
    * @param id bench result id 
-   * @return
+   * @return bench result, when found
+   * @throws RetrofitError when not found
    */
   BenchResult find(RestAdapter adapter, String benchResultId);
   
@@ -23,8 +34,8 @@ public interface BenchResultService {
   /**
    * Returns true when the bench result is finished.
    * 
-   * @param benchResult
-   * @return
+   * @param benchResult bench result
+   * @return {@code true} if the result execution is finished
    */
   boolean isFinished(BenchResult benchResult);
 }

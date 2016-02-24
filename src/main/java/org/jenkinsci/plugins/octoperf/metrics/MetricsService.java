@@ -4,7 +4,16 @@ import org.joda.time.DateTime;
 
 import retrofit.RestAdapter;
 
+/**
+ * Retrieve test metrics from remote servers.
+ * 
+ * @author jerome
+ *
+ */
 public interface MetricsService {
+  /**
+   * {@link MetricsService} singleton instance.
+   */
   MetricsService METRICS = new RestMetricsService();
   
   /**
@@ -18,9 +27,11 @@ public interface MetricsService {
   MetricValues getMetrics(RestAdapter adapter, String benchResultId);
   
   /**
-   * Converts the metrics into a human readable line of values 
-   * @param metrics
-   * @return
+   * Converts the metrics into a human readable line of values
+   * 
+   * @param startTime test start time
+   * @param metrics metrics to print
+   * @return printable output
    */
   String toPrintable(DateTime startTime, MetricValues metrics);
   
