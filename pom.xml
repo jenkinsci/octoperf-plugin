@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.jenkinsci.plugins</groupId>
 	<artifactId>octoperf-jenkins-plugin</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 
 	<name>Octoperf Load Testing Plugin.</name>
@@ -146,7 +146,7 @@
 		<connection>scm:git:ssh://github.com/octoperf/octoperf-jenkins-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/octoperf/octoperf-jenkins-plugin.git</developerConnection>
 		<url>https://github.com/octoperf/octoperf-jenkins-plugin</url>
-		<tag>1.0.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<repositories>
