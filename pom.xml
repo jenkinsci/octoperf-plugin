@@ -143,10 +143,10 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:ssh://github.com/octoperf/octoperf-jenkins-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/octoperf/octoperf-jenkins-plugin.git</developerConnection>
-		<url>https://github.com/octoperf/octoperf-jenkins-plugin</url>
+		<connection>scm:git:ssh://github.com/octoperf/octoperf-jci.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/octoperf/octoperf-jci.git</developerConnection>
 		<tag>HEAD</tag>
+		<url>https://github.com/OctoPerf/octoperf-jci</url>
 	</scm>
 
 	<repositories>
