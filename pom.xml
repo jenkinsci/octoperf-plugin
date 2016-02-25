@@ -9,13 +9,13 @@
 		<relativePath />
 	</parent>
 	<groupId>org.jenkinsci.plugins</groupId>
-	<artifactId>octoperf-jenkins-plugin</artifactId>
+	<artifactId>octoperf-jci</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 
 	<name>Octoperf Load Testing Plugin.</name>
 	<description>Run load tests on Octoperf directly from Jenkins.</description>
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/Octoperf+Jenkins+Plugin</url>
+	<url>https://wiki.jenkins-ci.org/display/JENKINS/Octoperf+Jci</url>
 
 	<properties>
 		<commons.compress.version>1.10</commons.compress.version>
