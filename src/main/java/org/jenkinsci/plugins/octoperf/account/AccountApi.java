@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.octoperf.account;
 
-import java.util.Optional;
+
+import com.google.common.base.Optional;
 
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;

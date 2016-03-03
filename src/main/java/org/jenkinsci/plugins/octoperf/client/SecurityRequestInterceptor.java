@@ -1,11 +1,10 @@
 package org.jenkinsci.plugins.octoperf.client;
 
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
 
-import java.util.Optional;
+import static com.google.common.base.Optional.fromNullable;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 
 import retrofit.RequestInterceptor;
 
@@ -21,7 +20,7 @@ final class SecurityRequestInterceptor implements RequestInterceptor, RestClient
   static final String NONE = "none";
   static final String AUTHENTICATION_HEADER = "AuthenticationToken";
 
-  private volatile Optional<String> apiKey = Optional.empty();
+  private volatile Optional<String> apiKey = Optional.absent();
 
   @Override
   public void intercept(final RequestFacade request) {
@@ -32,11 +31,11 @@ final class SecurityRequestInterceptor implements RequestInterceptor, RestClient
 
   @Override
   public void onApiKey(final String apiKey) {
-    this.apiKey = ofNullable(apiKey);
+    this.apiKey = fromNullable(apiKey);
   }
   
   @Override
   public void onLogout() {
-    this.apiKey = empty();
+    this.apiKey = Optional.absent();
   }
 }
