@@ -1,14 +1,14 @@
 package org.jenkinsci.plugins.octoperf.project;
 
-import java.util.List;
-
 import com.google.common.annotations.VisibleForTesting;
+import retrofit2.Call;
+import retrofit2.http.GET;
 
-import retrofit.http.GET;
+import java.util.List;
 
 @VisibleForTesting
 public interface ProjectApi {
 
   @GET("/project/list/DESIGN")
-  List<Project> getProjects();
+  Call<List<Project>> getProjects();
 }

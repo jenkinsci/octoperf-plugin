@@ -1,29 +1,26 @@
 package org.jenkinsci.plugins.octoperf;
 
-import static com.cloudbees.plugins.credentials.CredentialsScope.GLOBAL;
-import static org.jenkinsci.plugins.octoperf.OctoperfBuilder.DESCRIPTOR;
-import static org.jenkinsci.plugins.octoperf.account.AccountService.ACCOUNTS;
-import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
-
-import java.io.IOException;
-
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
-
 import hudson.Extension;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
+import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
+import org.jenkinsci.plugins.octoperf.project.ProjectService;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import retrofit2.Retrofit;
+
+import javax.mail.MessagingException;
+import javax.servlet.ServletException;
+import java.io.IOException;
+
+import static com.cloudbees.plugins.credentials.CredentialsScope.GLOBAL;
+import static org.jenkinsci.plugins.octoperf.OctoperfBuilder.DESCRIPTOR;
+import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 
 /**
  * Username and password to login on Octoperf's platform.
@@ -65,10 +62,12 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
         @QueryParameter("username") final String username,
         @QueryParameter("password") final Secret password) throws MessagingException, IOException, ServletException {
       try {
-        final Pair<RestAdapter, RestClientAuthenticator> pair = CLIENTS.create(DESCRIPTOR.getOctoperfURL());
-        ACCOUNTS.login(pair, username, password.getPlainText());
+        final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(DESCRIPTOR.getOctoperfURL(), System.out);
+        pair.getRight().onUsernameAndPassword(username, password.getPlainText());
+        // Get projects to test authentication
+        ProjectService.PROJECTS.getProjects(pair.getLeft());
         return FormValidation.ok("Successfully logged in!");
-      } catch(final RetrofitError e) {
+      } catch(final IOException e) {
         return FormValidation.error("Invalid credentials",e);        
       }
     }

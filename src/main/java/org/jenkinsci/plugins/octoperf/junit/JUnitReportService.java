@@ -1,9 +1,10 @@
 package org.jenkinsci.plugins.octoperf.junit;
 
-import java.io.IOException;
-
 import hudson.FilePath;
-import retrofit.RestAdapter;
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
+import retrofit2.Retrofit;
+
+import java.io.IOException;
 
 public interface JUnitReportService {
   JUnitReportService JUNIT_REPORTS = new RestJUnitReportService();
@@ -12,7 +13,7 @@ public interface JUnitReportService {
    * Saves the junit test report on disk.
    * 
    * @param workspace job workspace
-   * @param adapter rest adapter
+   * @param apiFactory rest retrofit
    * @param benchResultId bench result id
    * @return the path where the file is stored
    * @throws InterruptedException 
@@ -20,6 +21,6 @@ public interface JUnitReportService {
    */
   FilePath saveJUnitReport(
       FilePath workspace,
-      RestAdapter adapter, 
+      RestApiFactory apiFactory,
       String benchResultId) throws IOException, InterruptedException;
 }

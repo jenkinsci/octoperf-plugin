@@ -1,16 +1,15 @@
 package org.jenkinsci.plugins.octoperf;
 
-import static org.jenkinsci.plugins.octoperf.Constants.DEFAULT_API_URL;
-import static org.jenkinsci.plugins.octoperf.account.AccountService.ACCOUNTS;
-import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
-import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
-import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
-
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.google.common.base.Optional;
+import com.google.common.collect.Multimap;
+import hudson.model.AbstractProject;
+import hudson.model.Item;
+import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.Builder;
+import hudson.util.ListBoxModel;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
@@ -18,16 +17,15 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Multimap;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import hudson.model.AbstractProject;
-import hudson.model.Item;
-import hudson.tasks.BuildStepDescriptor;
-import hudson.tasks.Builder;
-import hudson.util.ListBoxModel;
-import net.sf.json.JSONObject;
-import retrofit.RestAdapter;
+import static org.jenkinsci.plugins.octoperf.Constants.DEFAULT_API_URL;
+import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
+import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
+import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 
 public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   private static final String ARROW = " => ";
@@ -90,15 +88,21 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
       final String username = credentials.getUsername();
       final String password = credentials.getPassword().getPlainText();
       
-      final Pair<RestAdapter, RestClientAuthenticator> pair = CLIENTS.create(octoperfURL);
-      final RestAdapter adapter = ACCOUNTS.login(pair, username, password);
-      
-      final Multimap<Project, Scenario> scenariosByProject = SCENARIOS.getScenariosByProject(adapter);
-      for(final Entry<Project, Scenario> entry : scenariosByProject.entries()) {
-        final Project project = entry.getKey();
-        final Scenario scenario = entry.getValue();
-        final String displayName = project.getName() + ARROW + scenario.getName();
-        items.add(displayName, scenario.getId());
+      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(octoperfURL, System.out);
+      final RestApiFactory apiFactory = pair.getLeft();
+      pair.getRight().onUsernameAndPassword(username, password);
+
+      try{
+        final Multimap<Project, Scenario> scenariosByProject = SCENARIOS.getScenariosByProject(apiFactory);
+        for(final Entry<Project, Scenario> entry : scenariosByProject.entries()) {
+          final Project project = entry.getKey();
+          final Scenario scenario = entry.getValue();
+          final String displayName = project.getName() + ARROW + scenario.getName();
+          items.add(displayName, scenario.getId());
+        }
+      }catch (IOException e){
+        items.add("Failed to connect to api.octoperf, please check your credentials.");
+        e.printStackTrace();
       }
     }
     return items;

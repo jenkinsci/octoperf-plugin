@@ -1,10 +1,11 @@
 package org.jenkinsci.plugins.octoperf.result;
 
-import retrofit.http.GET;
-import retrofit.http.Path;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
-interface BenchResultApi {
+public interface BenchResultApi {
 
   @GET("/bench/result/find/{id}")
-  BenchResult find(@Path("id") String id);
+  Call<BenchResult> find(@Path("id") String id);
 }

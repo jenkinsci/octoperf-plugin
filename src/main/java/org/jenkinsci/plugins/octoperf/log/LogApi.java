@@ -1,19 +1,20 @@
 package org.jenkinsci.plugins.octoperf.log;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
 import java.util.Set;
 
-import retrofit.client.Response;
-import retrofit.http.GET;
-import retrofit.http.Path;
-import retrofit.http.Query;
-
-interface LogApi {
+public interface LogApi {
 
   @GET("/logs/{benchResultId}")
-  Set<String> getFiles(@Path("benchResultId") String benchResultId);
+  Call<Set<String>> getFiles(@Path("benchResultId") String benchResultId);
   
   @GET("/logs/{benchResultId}/download")
-  Response getFile(
+  Call<ResponseBody> getFile(
       @Path("benchResultId") String benchResultId,
       @Query("filename") String filename);
 }

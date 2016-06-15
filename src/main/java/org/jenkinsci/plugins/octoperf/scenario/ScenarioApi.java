@@ -4,18 +4,19 @@ import java.util.List;
 
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.Path;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
-interface ScenarioApi {
+public interface ScenarioApi {
 
   @POST("/scenario/run/{id}")
-  BenchReport run(@Path("id") String scenarioId);
+  Call<BenchReport> run(@Path("id") String scenarioId);
   
   @GET("/scenario/list/{projectId}")
-  List<Scenario> list(@Path("projectId") String projectId);
+  Call<List<Scenario>> list(@Path("projectId") String projectId);
 
   @GET("/scenario/find/{id}")
-  Scenario find(@Path("id") String id);
+  Call<Scenario> find(@Path("id") String id);
 }

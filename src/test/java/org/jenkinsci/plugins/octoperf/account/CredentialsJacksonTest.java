@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +21,7 @@ public class CredentialsJacksonTest {
   
   @Test
   public void shouldJacksonSerializeCorrectly() throws IOException {
-    final Credentials dto = new Credentials("tokenKey");
+    final Credentials dto = new Credentials("tokenKey", "userId");
     
     final String json = mapper.writeValueAsString(dto);
     final Credentials fromJson = mapper.readValue(json, Credentials.class);

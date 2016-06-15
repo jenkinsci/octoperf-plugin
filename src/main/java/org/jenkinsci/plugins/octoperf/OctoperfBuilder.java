@@ -1,39 +1,6 @@
 package org.jenkinsci.plugins.octoperf;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static hudson.model.Result.SUCCESS;
-import static hudson.tasks.BuildStepMonitor.BUILD;
-import static org.jenkinsci.plugins.octoperf.account.AccountService.ACCOUNTS;
-import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
-import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
-import static org.jenkinsci.plugins.octoperf.junit.JUnitReportService.JUNIT_REPORTS;
-import static org.jenkinsci.plugins.octoperf.log.LogService.LOGS;
-import static org.jenkinsci.plugins.octoperf.metrics.MetricsService.METRICS;
-import static org.jenkinsci.plugins.octoperf.report.BenchReportService.BENCH_REPORTS;
-import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
-import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ABORTED;
-import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ERROR;
-import static org.jenkinsci.plugins.octoperf.result.BenchResultState.PENDING;
-import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
-import static org.joda.time.format.DateTimeFormat.forPattern;
-
-import java.io.IOException;
-import java.io.PrintStream;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
-import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
-import org.jenkinsci.plugins.octoperf.report.BenchReport;
-import org.jenkinsci.plugins.octoperf.result.BenchResult;
-import org.jenkinsci.plugins.octoperf.result.BenchResultState;
-import org.jenkinsci.plugins.octoperf.scenario.Scenario;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
-import org.joda.time.format.DateTimeFormatter;
-import org.kohsuke.stapler.DataBoundConstructor;
-
 import com.google.common.base.Optional;
-
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -44,8 +11,36 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
+import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
+import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
+import org.jenkinsci.plugins.octoperf.report.BenchReport;
+import org.jenkinsci.plugins.octoperf.result.BenchResult;
+import org.jenkinsci.plugins.octoperf.result.BenchResultState;
+import org.jenkinsci.plugins.octoperf.scenario.Scenario;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.format.DateTimeFormatter;
+import org.kohsuke.stapler.DataBoundConstructor;
+import retrofit2.Retrofit;
+
+import java.io.IOException;
+import java.io.PrintStream;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static hudson.model.Result.SUCCESS;
+import static hudson.tasks.BuildStepMonitor.BUILD;
+import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
+import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
+import static org.jenkinsci.plugins.octoperf.junit.JUnitReportService.JUNIT_REPORTS;
+import static org.jenkinsci.plugins.octoperf.log.LogService.LOGS;
+import static org.jenkinsci.plugins.octoperf.metrics.MetricsService.METRICS;
+import static org.jenkinsci.plugins.octoperf.report.BenchReportService.BENCH_REPORTS;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.*;
+import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
+import static org.joda.time.format.DateTimeFormat.forPattern;
 
 @Getter
 @Setter
@@ -85,43 +80,38 @@ public class OctoperfBuilder extends Builder {
     logger.println("API url: " + apiUrl);
     
     logger.println("Logging in..");
-    final RestAdapter adapter;
-    try {
-      final Pair<RestAdapter, RestClientAuthenticator> pair = CLIENTS.create(apiUrl);
-      adapter = ACCOUNTS.login(pair, creds.getUsername(), creds.getPassword().getPlainText());
-      logger.println("Successfully logged in!");
-    } catch(final RetrofitError e) {
-      logger.println("Login failed: " + String.valueOf(e));
-      return false;
-    }
-    
-    final Scenario scenario = SCENARIOS.find(adapter, scenarioId);
+    final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(apiUrl, logger);
+    pair.getRight().onUsernameAndPassword(creds.getUsername(), creds.getPassword().getPlainText());
+    final RestApiFactory apiFactory = pair.getLeft();
+
+    final Scenario scenario = SCENARIOS.find(apiFactory, scenarioId);
     logger.println("Launching scenario with:");
     logger.println("- name: " + scenario.getName() + ",");
     logger.println("- description: " + scenario.getDescription());
     
     BenchReport report;
     try {
-      report = SCENARIOS.startTest(adapter, scenarioId);
+      report = SCENARIOS.startTest(apiFactory, scenarioId);
       logger.println("The scenario has been successfully scheduled for execution!");
       logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(report));
-    } catch(final RetrofitError e) {
+    } catch(final IOException e) {
       logger.println("Could not start test: " + String.valueOf(e));
+      e.printStackTrace(logger);
       return false;
     }
     
-    final BenchResult result = BENCH_RESULTS.find(adapter, report.getBenchResultId());
+    final BenchResult result = BENCH_RESULTS.find(apiFactory, report.getBenchResultId());
     final Duration duration = Duration.millis(result.getDurationInMs());
     logger.println("Expected test duration: " + duration.toPeriod());
     
     logger.println("Launching test..");
     BenchResultState currentState = PENDING;
-    
+
     Optional<DateTime> startTime = Optional.absent();
     while(true) {
       Thread.sleep(10000);
       
-      currentState = BENCH_RESULTS.getState(adapter, report.getBenchResultId());
+      currentState = BENCH_RESULTS.getState(apiFactory, report.getBenchResultId());
       
       if(currentState.isRunning()) {
         final DateTime now = DateTime.now();
@@ -129,7 +119,7 @@ public class OctoperfBuilder extends Builder {
           startTime = Optional.of(now);
         }
         
-        final MetricValues metrics = METRICS.getMetrics(adapter, result.getId());
+        final MetricValues metrics = METRICS.getMetrics(apiFactory, result.getId());
         final String printable = METRICS.toPrintable(startTime.get(), metrics);
         logger.println(DATE_FORMAT.print(now) + " - " + printable);
         
@@ -142,13 +132,13 @@ public class OctoperfBuilder extends Builder {
     }
     
     final FilePath workspace = build.getWorkspace();
-    
+
     logger.println("Saving JUnit report...");
-    final FilePath junitReport = JUNIT_REPORTS.saveJUnitReport(workspace, adapter, result.getId());
+    final FilePath junitReport = JUNIT_REPORTS.saveJUnitReport(workspace, apiFactory, result.getId());
     logger.println("JUnit report saved to: " + junitReport);
     
     logger.println("Downloading JMeter log files...");
-    LOGS.downloadLogFiles(workspace, logger, adapter, result.getId());
+    LOGS.downloadLogFiles(workspace, logger, apiFactory, result.getId());
     
     if(currentState == ERROR) {
       build.setResult(Result.FAILURE);

@@ -1,22 +1,17 @@
 package org.jenkinsci.plugins.octoperf.log;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Set;
-
+import com.google.common.io.Closer;
+import hudson.FilePath;
+import okhttp3.ResponseBody;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
+import retrofit2.Call;
+import retrofit2.Retrofit;
 
-import com.google.common.io.Closer;
-
-import hudson.FilePath;
-import retrofit.RestAdapter;
-import retrofit.client.Response;
-import retrofit.mime.TypedInput;
+import java.io.*;
+import java.util.Set;
 
 final class JMeterLogService implements LogService {
   private static final String LOG_EXT = ".log";
@@ -26,11 +21,11 @@ final class JMeterLogService implements LogService {
   public void downloadLogFiles(
       final FilePath workspace,
       final PrintStream logger,
-      final RestAdapter adapter, 
+      final RestApiFactory apiFactory,
       final String benchResultId) throws IOException, InterruptedException {
-    final LogApi api = adapter.create(LogApi.class);
-    
-    final Set<String> files = api.getFiles(benchResultId);
+    final LogApi api = apiFactory.create(LogApi.class);
+
+    final Set<String> files = api.getFiles(benchResultId).execute().body();
     logger.println("Available log files: " + files);
     
     final FilePath logsFolder = new FilePath(workspace, LOGS_FOLDER);
@@ -41,14 +36,14 @@ final class JMeterLogService implements LogService {
       final FilePath logFile = new FilePath(logsFolder, outputFilename);
     
       logger.println("Downloading log file: " + filename);
-      final Response response = api.getFile(benchResultId, filename);
-      final TypedInput body = response.getBody();
+      final Call<ResponseBody> response = api.getFile(benchResultId, filename);
+      final ResponseBody body = response.execute().body();
       
       final Closer closer = Closer.create();
-      InputStream input = closer.register(new BufferedInputStream(body.in()));
+      InputStream input = closer.register(new BufferedInputStream(body.byteStream()));
       try {
         final CompressorStreamFactory factory = new CompressorStreamFactory();
-        input = factory.createCompressorInputStream(body.in());
+        input = factory.createCompressorInputStream(body.byteStream());
       } catch (final CompressorException e) {
         // file is probably not compressed
       }

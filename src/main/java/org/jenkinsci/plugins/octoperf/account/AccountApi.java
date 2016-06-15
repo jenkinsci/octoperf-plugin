@@ -2,10 +2,10 @@ package org.jenkinsci.plugins.octoperf.account;
 
 
 import com.google.common.base.Optional;
-
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.POST;
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.POST;
 
 /**
  * This REST Api allows to register, login and logout a user on the REST server.
@@ -13,10 +13,10 @@ import retrofit.http.POST;
  * @author jerome
  *
  */
-interface AccountApi {
+public interface AccountApi {
 
   /**
-   * Logs in the user and sends back {@link CredentialsDTO} if login is successful.
+   * Logs in the user and sends back {@link Credentials} if login is successful.
    * 
    * @param username user username
    * @param password user password
@@ -24,5 +24,5 @@ interface AccountApi {
    */
   @POST("/user/unsecure/login")
   @FormUrlEncoded
-  Credentials login(@Field("username") String username, @Field("password") String password);
+  Call<Credentials> login(@Field("username") String username, @Field("password") String password);
 }

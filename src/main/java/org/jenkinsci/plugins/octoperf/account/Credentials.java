@@ -1,26 +1,33 @@
 package org.jenkinsci.plugins.octoperf.account;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
+import lombok.experimental.Wither;
+import org.joda.time.DateTime;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.Value;
-
 /**
- * Represents an authentication token.
- * This token is sent in each request to stay logged in.
+ * The database Id is used as the token
  * 
- * @author jerome
+ * @author gerald pereira
  *
  */
 @Value
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Credentials {
-  String token;
+  String id;
+  String userId;
 
   @JsonCreator
-  Credentials(@JsonProperty("token") final String token) {
+  public Credentials(
+      @JsonProperty("id") final String id,
+      @JsonProperty("userId") final String userId) {
     super();
-    this.token = checkNotNull(token);
+    this.id = checkNotNull(id);
+    this.userId = checkNotNull(userId);
   }
+  
 }

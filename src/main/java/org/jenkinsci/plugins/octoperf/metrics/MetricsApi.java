@@ -1,10 +1,11 @@
 package org.jenkinsci.plugins.octoperf.metrics;
 
-import retrofit.http.GET;
-import retrofit.http.Path;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
-interface MetricsApi {
+public interface MetricsApi {
   
   @GET("/metrics/global/{benchResultId}")
-  MetricValues getMetrics(@Path("benchResultId") String benchResultId);
+  Call<MetricValues> getMetrics(@Path("benchResultId") String benchResultId);
 }

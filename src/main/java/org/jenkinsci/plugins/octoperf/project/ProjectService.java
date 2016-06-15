@@ -1,8 +1,10 @@
 package org.jenkinsci.plugins.octoperf.project;
 
+import java.io.IOException;
 import java.util.List;
 
-import retrofit.RestAdapter;
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
+import retrofit2.Retrofit;
 
 /**
  * Provides common operations on projects. 
@@ -19,8 +21,8 @@ public interface ProjectService {
   
   /**
    * Returns the scenario ids per project id.
-   * @param adapter rest adapter with login performed
+   * @param apiFactory
    * @return list of user projects
    */
-  List<Project> getProjects(RestAdapter adapter);
+  List<Project> getProjects(RestApiFactory apiFactory) throws IOException;
 }

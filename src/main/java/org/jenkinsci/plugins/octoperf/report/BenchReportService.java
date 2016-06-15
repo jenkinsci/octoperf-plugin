@@ -15,7 +15,6 @@ public interface BenchReportService {
   /**
    * Computes the URL which points to the given report.
    * 
-   * @param result bench result
    * @param report bench report
    * @return
    */

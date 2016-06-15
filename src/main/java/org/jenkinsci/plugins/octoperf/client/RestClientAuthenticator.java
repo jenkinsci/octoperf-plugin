@@ -1,25 +1,18 @@
 package org.jenkinsci.plugins.octoperf.client;
 
-import retrofit.RequestInterceptor;
+import okhttp3.Authenticator;
 
-/**
- * Manages the Rest client authentication token.
- * 
- * <p>On Vaadin side, this interface must be injected and called 
- * on login and logout.</p>
- * 
- * <p>It allows the REST client to manage access to secured area automatically.</p>
- * 
- * @author jerome
- *
- */
-public interface RestClientAuthenticator extends RequestInterceptor {
+public interface RestClientAuthenticator extends Authenticator {
+
+  public static final String AUTHENTICATION_HEADER = "AuthenticationToken";
+
   /**
-   * When passing an api key.
+   * When passing crednetials.
    * 
-   * @param apiKey
+   * @param username
+   * @param password
    */
-  void onApiKey(final String apiKey);
+  void onUsernameAndPassword(final String username, final String password);
   
   /**
    * Logs out the client.

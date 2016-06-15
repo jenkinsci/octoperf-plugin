@@ -1,16 +1,18 @@
 package org.jenkinsci.plugins.octoperf.metrics;
 
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import retrofit2.Retrofit;
 
-import retrofit.RestAdapter;
+import java.io.IOException;
 
 final class RestMetricsService implements MetricsService {
-  
+
   @Override
-  public MetricValues getMetrics(final RestAdapter adapter, final String benchResultId) {
-    final MetricsApi api = adapter.create(MetricsApi.class);
-    return api.getMetrics(benchResultId);
+  public MetricValues getMetrics(final RestApiFactory apiFactory, final String benchResultId)  throws IOException {
+    final MetricsApi api = apiFactory.create(MetricsApi.class);
+    return api.getMetrics(benchResultId).execute().body();
   }
 
   @Override

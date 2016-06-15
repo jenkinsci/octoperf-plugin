@@ -1,8 +1,9 @@
 package org.jenkinsci.plugins.octoperf.metrics;
 
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.joda.time.DateTime;
 
-import retrofit.RestAdapter;
+import java.io.IOException;
 
 /**
  * Retrieve test metrics from remote servers.
@@ -20,11 +21,11 @@ public interface MetricsService {
    * Retrieves current test metrics from the server.
    * The returned metrics are test-wide metrics.
    * 
-   * @param adapter rest adapter
+   * @param apiFactory rest retrofit
    * @param benchResultId bench result id
    * @return global test metrics.
    */
-  MetricValues getMetrics(RestAdapter adapter, String benchResultId);
+  MetricValues getMetrics(RestApiFactory apiFactory, String benchResultId) throws IOException;
   
   /**
    * Converts the metrics into a human readable line of values

@@ -29,7 +29,7 @@
 		<junit.version>4.12</junit.version>
 		<lombok.version>1.16.6</lombok.version>
 		<mockito.version>1.10.19</mockito.version>
-		<retrofit.version>1.9.0</retrofit.version>
+		<retrofit2.version>2.1.0</retrofit2.version>
 	</properties>
 
 	<dependencies>
@@ -74,14 +74,20 @@
 			<version>${lombok.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.squareup.retrofit</groupId>
+			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>retrofit</artifactId>
-			<version>${retrofit.version}</version>
+			<version>${retrofit2.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.squareup.retrofit</groupId>
+			<groupId>com.squareup.retrofit2</groupId>
+			<artifactId>retrofit-mock</artifactId>
+			<version>${retrofit2.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.retrofit2</groupId>
 			<artifactId>converter-jackson</artifactId>
-			<version>${retrofit.version}</version>
+			<version>${retrofit2.version}</version>
 		</dependency>
 
 		<dependency>
@@ -151,6 +157,11 @@
 			<id>jloisel</id>
 			<name>Jerome Loisel</name>
 			<email>jerome.loisel@octoperf.com</email>
+		</developer>
+		<developer>
+			<id>geraldpereira</id>
+			<name>Gerald Pereira</name>
+			<email>gerald.pereira@octoperf.com</email>
 		</developer>
 	</developers>
 

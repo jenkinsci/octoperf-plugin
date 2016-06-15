@@ -7,8 +7,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import com.google.common.testing.NullPointerTester;
+import retrofit2.Retrofit;
 
-import retrofit.RestAdapter;
 
 public class RestClientServiceTest {
 
@@ -16,7 +16,7 @@ public class RestClientServiceTest {
   
   @Test
   public void shouldCreateClient() {
-    final Pair<RestAdapter, RestClientAuthenticator> pair = service.create("http://localhost");
+    final Pair<RestApiFactory, RestClientAuthenticator> pair = service.create("http://localhost", System.out);
     assertNotNull(pair.getLeft());
     assertNotNull(pair.getRight());
   }

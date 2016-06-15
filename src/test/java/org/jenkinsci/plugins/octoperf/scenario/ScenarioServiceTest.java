@@ -1,13 +1,9 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
-import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
-import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
+import com.google.common.testing.NullPointerTester;
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.project.ProjectApi;
 import org.jenkinsci.plugins.octoperf.project.ProjectTest;
@@ -18,12 +14,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import retrofit2.mock.Calls;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
-import com.google.common.testing.NullPointerTester;
+import java.io.IOException;
+import java.util.List;
 
-import retrofit.RestAdapter;
+import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class ScenarioServiceTest {
@@ -33,23 +36,24 @@ public class ScenarioServiceTest {
   private static final BenchReport BENCH_REPORT = BenchReportTest.newInstance();
   
   @Mock
-  RestAdapter adapter;
+  RestApiFactory retrofit;
   @Mock
   ScenarioApi api;
   @Mock
   ProjectApi projectApi;
-  
+
   @Before
-  public void before() {
-    when(adapter.create(ScenarioApi.class)).thenReturn(api);
-    when(adapter.create(ProjectApi.class)).thenReturn(projectApi);
-    when(projectApi.getProjects()).thenReturn(ImmutableList.of(ProjectTest.newInstance()));
+  public void before() throws IOException {
+    when(retrofit.create(ScenarioApi.class)).thenReturn(api);
+    when(retrofit.create(ProjectApi.class)).thenReturn(projectApi);
+    final List<Project> projects = ImmutableList.of(ProjectTest.newInstance());
+    when(projectApi.getProjects()).thenReturn(Calls.response(projects));
   }
   
   @Test
-  public void shouldRun() {
-    when(api.run(SCENARIO_ID)).thenReturn(BENCH_REPORT);
-    final BenchReport report = SCENARIOS.startTest(adapter, SCENARIO_ID);
+  public void shouldRun() throws IOException {
+    when(api.run(SCENARIO_ID)).thenReturn(Calls.response(BENCH_REPORT));
+    final BenchReport report = SCENARIOS.startTest(retrofit, SCENARIO_ID);
     assertSame(BENCH_REPORT, report);
     verify(api).run(SCENARIO_ID);
   }
@@ -60,20 +64,20 @@ public class ScenarioServiceTest {
   }
   
   @Test
-  public void shouldFind() {
-    when(api.find(SCENARIO.getId())).thenReturn(SCENARIO);
-    SCENARIOS.find(adapter, SCENARIO.getId());
-    verify(adapter).create(ScenarioApi.class);
+  public void shouldFind() throws IOException{
+    when(api.find(SCENARIO.getId())).thenReturn(Calls.response(SCENARIO));
+    SCENARIOS.find(retrofit, SCENARIO.getId());
+    verify(retrofit).create(ScenarioApi.class);
     verify(api).find(SCENARIO.getId());
   }
   
   @Test
-  public void shouldListScenariosPerProject() {
-    when(api.list(SCENARIO.getProjectId())).thenReturn(ImmutableList.of(SCENARIO));
-    final Multimap<Project, Scenario> multimap = SCENARIOS.getScenariosByProject(adapter);
+  public void shouldListScenariosPerProject() throws IOException{
+    when(api.list(SCENARIO.getProjectId())).thenReturn(Calls.response((List<Scenario>)ImmutableList.of(SCENARIO)));
+    final Multimap<Project, Scenario> multimap = SCENARIOS.getScenariosByProject(retrofit);
     assertFalse(multimap.isEmpty());
     verify(projectApi).getProjects();
-    verify(adapter).create(ScenarioApi.class);
+    verify(retrofit).create(ScenarioApi.class);
     verify(api).list(anyString());
   }
   

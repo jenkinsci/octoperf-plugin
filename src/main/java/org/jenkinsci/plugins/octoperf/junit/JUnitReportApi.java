@@ -1,11 +1,12 @@
 package org.jenkinsci.plugins.octoperf.junit;
 
-import retrofit.client.Response;
-import retrofit.http.GET;
-import retrofit.http.Path;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
-interface JUnitReportApi {
+public interface JUnitReportApi {
 
   @GET("/junit/report/{benchResultId}")
-  Response getReport(@Path("benchResultId") String benchResultId);
+  Call<ResponseBody> getReport(@Path("benchResultId") String benchResultId);
 }
