@@ -2,7 +2,6 @@ package org.jenkinsci.plugins.octoperf.junit;
 
 import hudson.FilePath;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
-import retrofit2.Retrofit;
 
 import java.io.IOException;
 

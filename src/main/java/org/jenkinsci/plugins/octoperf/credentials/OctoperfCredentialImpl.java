@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.octoperf;
+package org.jenkinsci.plugins.octoperf.credentials;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
@@ -12,7 +12,6 @@ import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.project.ProjectService;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import retrofit2.Retrofit;
 
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;

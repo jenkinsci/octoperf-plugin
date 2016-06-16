@@ -3,11 +3,10 @@ package org.jenkinsci.plugins.octoperf.credentials;
 import static com.cloudbees.plugins.credentials.CredentialsScope.SYSTEM;
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.jenkinsci.plugins.octoperf.OctoperfCredential;
-import org.jenkinsci.plugins.octoperf.OctoperfCredentialImpl;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +36,11 @@ public class JenkinsCredentialsServiceTest {
   @Test
   public void shouldPassNPETester() {
     new NullPointerTester().testConstructors(JenkinsCredentialsService.class, PACKAGE);
+  }
+
+  @Test
+  public void shouldCreateSingleton() {
+    assertNotNull(CredentialsService.CREDENTIALS_SERVICE);
   }
 
   @Test

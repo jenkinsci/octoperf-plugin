@@ -4,7 +4,7 @@ import okhttp3.Authenticator;
 
 public interface RestClientAuthenticator extends Authenticator {
 
-  public static final String AUTHENTICATION_HEADER = "AuthenticationToken";
+  String AUTHENTICATION_HEADER = "AuthenticationToken";
 
   /**
    * When passing crednetials.

@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
-import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.util.List;

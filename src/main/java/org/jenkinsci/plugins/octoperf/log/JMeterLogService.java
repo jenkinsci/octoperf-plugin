@@ -8,7 +8,6 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import retrofit2.Call;
-import retrofit2.Retrofit;
 
 import java.io.*;
 import java.util.Set;
@@ -46,6 +45,7 @@ final class JMeterLogService implements LogService {
         input = factory.createCompressorInputStream(body.byteStream());
       } catch (final CompressorException e) {
         // file is probably not compressed
+        e.printStackTrace(logger);
       }
       
       try {

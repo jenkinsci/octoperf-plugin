@@ -1,10 +1,9 @@
 package org.jenkinsci.plugins.octoperf.project;
 
+import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
+
 import java.io.IOException;
 import java.util.List;
-
-import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
-import retrofit2.Retrofit;
 
 /**
  * Provides common operations on projects. 

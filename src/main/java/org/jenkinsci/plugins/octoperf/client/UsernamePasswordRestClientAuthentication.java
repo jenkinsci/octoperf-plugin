@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.octoperf.client;
 
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -46,7 +45,7 @@ final class UsernamePasswordRestClientAuthentication implements RestClientAuthen
     try{
       credentials = accountApi.login(username.get(), password.get()).execute().body();
     }catch (IOException e){
-      logger.println("Authentication failed.");
+      logger.println("Authentication failed. "+e);
       e.printStackTrace(logger);
       return null;
     }

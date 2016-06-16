@@ -20,7 +20,12 @@ public class RestClientServiceTest {
     assertNotNull(pair.getLeft());
     assertNotNull(pair.getRight());
   }
-  
+
+  @Test
+  public void shouldCreateSingleton(){
+    assertNotNull(RestClientService.CLIENTS);
+  }
+
   @Test
   public void shouldPassNPETester() {
     new NullPointerTester().testConstructors(service.getClass(), PACKAGE);

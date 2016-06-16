@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.octoperf.metrics;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import retrofit2.Retrofit;
 
 import java.io.IOException;
 
@@ -20,13 +19,13 @@ final class RestMetricsService implements MetricsService {
     final DateTime now = DateTime.now();
     final Duration duration = new Duration(startTime, now);
     
-    final StringBuilder b = new StringBuilder();
+    final StringBuilder b = new StringBuilder(256);
     for(final MetricValue metric : metrics.getMetrics()) {
-      b.append(metric.getName() + ": " + String.format("%.2f",metric.getValue()) + metric.getUnit());
+      b.append(metric.getName()).append(": ").append(String.format("%.2f",metric.getValue())).append(metric.getUnit());
       b.append(" ");
     }
     
-    b.append("Duration: " + duration.getStandardSeconds() + "s");
+    b.append("Duration: ").append(duration.getStandardSeconds() + "s");
     return b.toString();
   }
 

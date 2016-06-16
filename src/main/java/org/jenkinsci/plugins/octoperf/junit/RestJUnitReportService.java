@@ -6,7 +6,6 @@ import okhttp3.ResponseBody;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import retrofit2.Call;
-import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.io.InputStream;

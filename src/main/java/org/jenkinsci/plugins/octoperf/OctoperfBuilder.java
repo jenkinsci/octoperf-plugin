@@ -14,6 +14,7 @@ import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
+import org.jenkinsci.plugins.octoperf.credentials.OctoperfCredential;
 import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 import org.jenkinsci.plugins.octoperf.result.BenchResult;
@@ -23,7 +24,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.DataBoundConstructor;
-import retrofit2.Retrofit;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -45,21 +45,27 @@ import static org.joda.time.format.DateTimeFormat.forPattern;
 @Getter
 @Setter
 public class OctoperfBuilder extends Builder {
+  @Extension
+  public static final OctoperfBuilderDescriptor DESCRIPTOR = new OctoperfBuilderDescriptor();
+
   private static final DateTimeFormatter DATE_FORMAT = forPattern("HH:mm:ss");
-  
+  public static final int MILLIS = 10000;
+
   private final Optional<OctoperfCredential> credentials;
   private final String scenarioId;
 
-  private AbstractBuild<?, ?> build = null;
+  private AbstractBuild<?, ?> build;
 
   @DataBoundConstructor
   public OctoperfBuilder(
       final String credentialsId, 
       final String scenarioId) {
+    super();
     this.credentials = CREDENTIALS_SERVICE.find(credentialsId);
     this.scenarioId = checkNotNull(scenarioId);
   }
 
+  @Override
   public BuildStepMonitor getRequiredMonitorService() {
     return BUILD;
   }
@@ -95,7 +101,7 @@ public class OctoperfBuilder extends Builder {
       logger.println("The scenario has been successfully scheduled for execution!");
       logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(report));
     } catch(final IOException e) {
-      logger.println("Could not start test: " + String.valueOf(e));
+      logger.println("Could not start test: " + e);
       e.printStackTrace(logger);
       return false;
     }
@@ -109,7 +115,7 @@ public class OctoperfBuilder extends Builder {
 
     Optional<DateTime> startTime = Optional.absent();
     while(true) {
-      Thread.sleep(10000);
+      Thread.sleep(MILLIS);
       
       currentState = BENCH_RESULTS.getState(apiFactory, report.getBenchResultId());
       
@@ -156,6 +162,4 @@ public class OctoperfBuilder extends Builder {
     return DESCRIPTOR;
   }
 
-  @Extension
-  public static final OctoperfBuilderDescriptor DESCRIPTOR = new OctoperfBuilderDescriptor();
 }

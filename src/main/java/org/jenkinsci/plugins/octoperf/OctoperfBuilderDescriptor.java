@@ -11,6 +11,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
+import org.jenkinsci.plugins.octoperf.credentials.OctoperfCredential;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.kohsuke.stapler.QueryParameter;
@@ -31,8 +32,8 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   private static final String ARROW = " => ";
   private static final String DISPLAY_NAME = "Octoperf";
 
-  private String octoperfURL = Constants.DEFAULT_API_URL;
-  private String name = "My Octperf Account";
+  private String octoperfURL = DEFAULT_API_URL;
+  private final String name = "My Octperf Account";
 
   OctoperfBuilderDescriptor() {
     super(OctoperfBuilder.class);
@@ -58,7 +59,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, Optional.fromNullable(item))) {
       final String id = c.getId();
       if (!ids.contains(id)) {
-        final ListBoxModel.Option option = 
+        final ListBoxModel.Option option =
             new ListBoxModel.Option(c.getUsername(), id, isFirst);
         ids.add(id);
         items.add(option);
@@ -67,41 +68,41 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     }
     return items;
   }
-  
+
   /**
    * Computes the scenarios list when asked by the UI.
-   * 
+   *
    * @param credentialsId credentials id
    * @return combo box model with all scenarios
    */
-  public ListBoxModel doFillScenarioIdItems(final @QueryParameter("credentialsId") String credentialsId) {
+  public ListBoxModel doFillScenarioIdItems(@QueryParameter("credentialsId") final String credentialsId) {
     final Optional<OctoperfCredential> optional;
-    if(credentialsId.isEmpty()) {
+    if (credentialsId.isEmpty()) {
       optional = CREDENTIALS_SERVICE.findFirst();
     } else {
       optional = CREDENTIALS_SERVICE.find(credentialsId);
     }
-    
+
     final ListBoxModel items = new ListBoxModel();
-    if(optional.isPresent()) {
+    if (optional.isPresent()) {
       final OctoperfCredential credentials = optional.get();
       final String username = credentials.getUsername();
       final String password = credentials.getPassword().getPlainText();
-      
+
       final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(octoperfURL, System.out);
       final RestApiFactory apiFactory = pair.getLeft();
       pair.getRight().onUsernameAndPassword(username, password);
 
-      try{
+      try {
         final Multimap<Project, Scenario> scenariosByProject = SCENARIOS.getScenariosByProject(apiFactory);
-        for(final Entry<Project, Scenario> entry : scenariosByProject.entries()) {
+        for (final Entry<Project, Scenario> entry : scenariosByProject.entries()) {
           final Project project = entry.getKey();
           final Scenario scenario = entry.getValue();
           final String displayName = project.getName() + ARROW + scenario.getName();
           items.add(displayName, scenario.getId());
         }
-      }catch (IOException e){
-        items.add("Failed to connect to api.octoperf, please check your credentials.");
+      } catch (IOException e) {
+        items.add("Failed to connect to api.octoperf, please check your credentials. "+e);
         e.printStackTrace();
       }
     }
@@ -115,11 +116,11 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     save();
     return true;
   }
-  
+
   public String getOctoperfURL() {
     return octoperfURL;
   }
-  
+
   public void setOctoperfURL(String octoperfURL) {
     this.octoperfURL = octoperfURL;
   }

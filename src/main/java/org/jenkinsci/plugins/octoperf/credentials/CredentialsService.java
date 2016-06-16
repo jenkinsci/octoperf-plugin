@@ -2,8 +2,6 @@ package org.jenkinsci.plugins.octoperf.credentials;
 
 import java.util.List;
 
-import org.jenkinsci.plugins.octoperf.OctoperfCredential;
-
 import com.google.common.base.Optional;
 
 import hudson.model.Item;
