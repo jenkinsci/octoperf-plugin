@@ -1,6 +1,6 @@
 package org.jenkinsci.plugins.octoperf;
 
-class Constants {
+interface Constants {
 
-  public final static String DEFAULT_API_URL = "https://api.octoperf.com";
+  String DEFAULT_API_URL = "https://api.octoperf.com";
 }
