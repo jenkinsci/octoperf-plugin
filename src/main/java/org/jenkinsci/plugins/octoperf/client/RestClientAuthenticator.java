@@ -1,8 +1,9 @@
 package org.jenkinsci.plugins.octoperf.client;
 
 import okhttp3.Authenticator;
+import okhttp3.Interceptor;
 
-public interface RestClientAuthenticator extends Authenticator {
+public interface RestClientAuthenticator extends Authenticator, Interceptor {
 
   String AUTHENTICATION_HEADER = "AuthenticationToken";
 

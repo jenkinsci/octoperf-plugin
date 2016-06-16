@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import org.jenkinsci.plugins.octoperf.OctoperfCredential;
+import org.jenkinsci.plugins.octoperf.OctoperfCredentialImpl;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

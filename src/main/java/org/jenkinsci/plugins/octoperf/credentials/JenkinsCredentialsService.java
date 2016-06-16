@@ -14,6 +14,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 import hudson.model.Item;
+import org.jenkinsci.plugins.octoperf.OctoperfCredential;
 
 final class JenkinsCredentialsService implements CredentialsService {
   private static final List<DomainRequirement> NO_REQUIREMENTS = ImmutableList.of();

@@ -11,7 +11,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
-import org.jenkinsci.plugins.octoperf.credentials.OctoperfCredential;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.kohsuke.stapler.QueryParameter;

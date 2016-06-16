@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.base.Optional;
 
 import hudson.model.Item;
+import org.jenkinsci.plugins.octoperf.OctoperfCredential;
 
 /**
  * Facility for manipulating Jenkins Credentials.

@@ -1,15 +1,17 @@
 package org.jenkinsci.plugins.octoperf.client;
 
 import com.google.common.annotations.VisibleForTesting;
+import okhttp3.Interceptor;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jenkinsci.plugins.octoperf.account.AccountApi;
 import org.jenkinsci.plugins.octoperf.account.Credentials;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import retrofit2.Call;
@@ -34,8 +36,14 @@ public class UsernamePasswordRestClientAuthenticationTest {
   @Mock
   private AccountApi accountApi;
 
+  @Mock
+  private Interceptor.Chain chain;
+
   private Response response;
   private Request request;
+
+  @Captor
+  ArgumentCaptor<Request> captor;
 
   @Before
   public void before() {
@@ -69,5 +77,9 @@ public class UsernamePasswordRestClientAuthenticationTest {
     final Request request = authenticator.authenticate(null, response);
     assertNotNull(request);
     assertEquals("id", request.header(RestClientAuthenticator.AUTHENTICATION_HEADER));
+    when(chain.request()).thenReturn(request);
+    authenticator.intercept(chain);
+    verify(chain).proceed(captor.capture());
+    assertEquals("id", captor.getValue().header(RestClientAuthenticator.AUTHENTICATION_HEADER));
   }
 }

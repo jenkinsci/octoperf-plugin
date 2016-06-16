@@ -26,7 +26,7 @@ final class RetrofitClientService implements RestClientService {
     final Retrofit client = new Retrofit
         .Builder()
         .addConverterFactory(JacksonConverterFactory.create())
-        .client(new OkHttpClient.Builder().authenticator(authenticator).build())
+        .client(new OkHttpClient.Builder().authenticator(authenticator).addNetworkInterceptor(authenticator).build())
         .baseUrl(apiUrl)
         .build();
 

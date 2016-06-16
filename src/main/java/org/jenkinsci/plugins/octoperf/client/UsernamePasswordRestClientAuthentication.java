@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.octoperf.client;
 
 
 import com.google.common.base.Optional;
+import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
@@ -25,7 +26,7 @@ final class UsernamePasswordRestClientAuthentication implements RestClientAuthen
 
   private volatile Optional<String> username = Optional.absent();
   private volatile Optional<String> password = Optional.absent();
-  private volatile String token;
+  private volatile Optional<String> token = Optional.absent();
 
   private final AccountApi accountApi;
   private final PrintStream logger;
@@ -50,10 +51,10 @@ final class UsernamePasswordRestClientAuthentication implements RestClientAuthen
       return null;
     }
 
-    token = credentials.getId();
+    token = Optional.of(credentials.getId());
 
     return response.request().newBuilder()
-        .header(AUTHENTICATION_HEADER, token)
+        .header(AUTHENTICATION_HEADER, token.get())
         .build();
   }
 
@@ -68,5 +69,11 @@ final class UsernamePasswordRestClientAuthentication implements RestClientAuthen
     this.username = Optional.absent();
     this.password = Optional.absent();
 
+  }
+
+  @Override
+  public Response intercept(Chain chain) throws IOException {
+    Request request = chain.request().newBuilder().addHeader(AUTHENTICATION_HEADER, token.or("")).build();
+    return chain.proceed(request);
   }
 }

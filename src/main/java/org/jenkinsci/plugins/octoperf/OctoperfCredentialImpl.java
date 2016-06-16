@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.octoperf.credentials;
+package org.jenkinsci.plugins.octoperf;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
