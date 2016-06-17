@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import retrofit2.Retrofit;
 
+import static lombok.AccessLevel.PACKAGE;
+
 /**
  * Retrofit wrapper. As retrofit is a final class this is mandatory to unit test our code ...
  */
-@AllArgsConstructor
+@AllArgsConstructor(access = PACKAGE)
 final class RetrofitWrapper implements RestApiFactory {
 
   @NonNull
