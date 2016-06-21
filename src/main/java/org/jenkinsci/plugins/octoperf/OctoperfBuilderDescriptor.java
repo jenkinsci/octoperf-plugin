@@ -32,7 +32,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   private static final String DISPLAY_NAME = "Octoperf";
 
   private String octoperfURL = DEFAULT_API_URL;
-  private final String name = "My Octperf Account";
+  private String name = "My OctPerf Account";
 
   OctoperfBuilderDescriptor() {
     super(OctoperfBuilder.class);
