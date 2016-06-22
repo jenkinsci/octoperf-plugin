@@ -2,12 +2,12 @@ package org.jenkinsci.plugins.octoperf.client;
 
 
 import com.google.common.base.Optional;
-import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
 import org.jenkinsci.plugins.octoperf.account.AccountApi;
 import org.jenkinsci.plugins.octoperf.account.Credentials;
+import retrofit2.Call;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -42,20 +42,24 @@ final class UsernamePasswordRestClientAuthentication implements RestClientAuthen
       return null;
     }
 
-    Credentials credentials;
+    Optional<Credentials> credentials = Optional.absent();
     try{
-      credentials = accountApi.login(username.get(), password.get()).execute().body();
-    }catch (IOException e){
+      final Call<Credentials> login = accountApi.login(username.get(), password.get());
+      credentials = Optional.fromNullable(login.execute().body());
+    } catch (final IOException e){
       logger.println("Authentication failed. "+e);
       e.printStackTrace(logger);
       return null;
     }
 
-    token = Optional.of(credentials.getId());
+    if(credentials.isPresent()) {
+      token = Optional.of(credentials.get().getId());
 
-    return response.request().newBuilder()
+      return response.request().newBuilder()
         .header(AUTHENTICATION_HEADER, token.get())
         .build();
+    }
+    return null;
   }
 
   @Override
@@ -72,8 +76,11 @@ final class UsernamePasswordRestClientAuthentication implements RestClientAuthen
   }
 
   @Override
-  public Response intercept(Chain chain) throws IOException {
-    Request request = chain.request().newBuilder().addHeader(AUTHENTICATION_HEADER, token.or("")).build();
+  public Response intercept(final Chain chain) throws IOException {
+    Request request = chain.request();
+    if(token.isPresent()) {
+      request = request.newBuilder().addHeader(AUTHENTICATION_HEADER, token.or("")).build();
+    }
     return chain.proceed(request);
   }
 }

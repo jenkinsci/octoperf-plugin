@@ -42,7 +42,7 @@ final class JMeterLogService implements LogService {
       InputStream input = closer.register(new BufferedInputStream(body.byteStream()));
       try {
         final CompressorStreamFactory factory = new CompressorStreamFactory();
-        input = factory.createCompressorInputStream(body.byteStream());
+        input = factory.createCompressorInputStream(input);
       } catch (final CompressorException e) {
         // file is probably not compressed
         e.printStackTrace(logger);
