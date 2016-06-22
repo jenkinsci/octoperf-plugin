@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.jenkinsci.plugins</groupId>
 	<artifactId>octoperf</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+	<version>2.0.0</version>
 	<packaging>hpi</packaging>
 
 	<name>OctoPerf Load Testing Plugin.</name>
@@ -36,7 +36,7 @@
 		<profile>
 			<id>jdk7</id>
 			<properties>
-				<javadoc.flag></javadoc.flag>
+				<javadoc.flag />
 			</properties>
 			<activation>
 				<jdk>1.7</jdk>
@@ -178,7 +178,7 @@
 		<connection>scm:git:ssh://github.com/jenkinsci/octoperf-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/octoperf-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/octoperf-plugin</url>
-	  <tag>HEAD</tag>
+	  <tag>2.0.0</tag>
   </scm>
 
 	<repositories>
