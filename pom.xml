@@ -18,6 +18,7 @@
   <url>https://wiki.jenkins-ci.org/display/JENKINS/OctoPerf+Plugin</url>
 
   <properties>
+    <java.level>8</java.level>
     <commons.compress.version>1.11</commons.compress.version>
     <commons.lang3.version>3.4</commons.lang3.version>
     <commons.io.version>2.5</commons.io.version>
