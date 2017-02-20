@@ -126,7 +126,7 @@ public class OctoperfBuilder extends Builder {
         final String printable = METRICS.toPrintable(startTime.get(), metrics);
         final String nowStr = DATE_FORMAT.print(now);
         logger.println(nowStr + " - " + printable);
-        logger.println(nowStr + " - " + BENCH_RESULTS.getProgress(apiFactory, result.getId()));
+        logger.println(nowStr + " - Progress: " + BENCH_RESULTS.getProgress(apiFactory, result.getId()) + "%");
       } else if(currentState.isTerminalState()) {
         logger.println("Test finished with state: " + currentState);
         break;
