@@ -23,5 +23,5 @@ public interface ProjectService {
    * @param apiFactory
    * @return list of user projects
    */
-  List<Project> getProjects(RestApiFactory apiFactory) throws IOException;
+  List<Project> getProjects(RestApiFactory apiFactory, String workspaceId) throws IOException;
 }

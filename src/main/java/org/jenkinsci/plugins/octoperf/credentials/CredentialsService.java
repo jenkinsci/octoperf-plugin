@@ -8,7 +8,7 @@ import hudson.model.Item;
 import org.jenkinsci.plugins.octoperf.OctoperfCredential;
 
 /**
- * Facility for manipulating Jenkins Credentials.
+ * Facility for manipulating Jenkins SecurityToken.
  * 
  * @author jerome
  *

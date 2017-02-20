@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.octoperf;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.tasks.BuildStepDescriptor;
@@ -13,13 +13,13 @@ import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
+import org.jenkinsci.plugins.octoperf.workspace.Workspace;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import static org.jenkinsci.plugins.octoperf.Constants.DEFAULT_API_URL;
@@ -29,10 +29,10 @@ import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 
 public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   private static final String ARROW = " => ";
-  private static final String DISPLAY_NAME = "Octoperf";
+  private static final String DISPLAY_NAME = "OctoPerf";
 
   private String octoperfURL = DEFAULT_API_URL;
-  private String name = "My OctPerf Account";
+  private String name = "My OctoPerf Account";
 
   OctoperfBuilderDescriptor() {
     super(OctoperfBuilder.class);
@@ -93,15 +93,16 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
       pair.getRight().onUsernameAndPassword(username, password);
 
       try {
-        final Multimap<Project, Scenario> scenariosByProject = SCENARIOS.getScenariosByProject(apiFactory);
-        for (final Entry<Project, Scenario> entry : scenariosByProject.entries()) {
-          final Project project = entry.getKey();
+        final Table<Workspace, Project, Scenario> scenariosByProject = SCENARIOS.getScenariosByProject(apiFactory);
+        for (final Table.Cell<Workspace, Project, Scenario> entry : scenariosByProject.cellSet()) {
+          final Workspace workspace = entry.getRowKey();
+          final Project project = entry.getColumnKey();
           final Scenario scenario = entry.getValue();
-          final String displayName = project.getName() + ARROW + scenario.getName();
+          final String displayName = workspace + ARROW + project.getName() + ARROW + scenario.getName();
           items.add(displayName, scenario.getId());
         }
       } catch (IOException e) {
-        items.add("Failed to connect to api.octoperf, please check your credentials. "+e);
+        items.add("Failed to connect to OctoPerf, please check your credentials. "+e);
         e.printStackTrace();
       }
     }

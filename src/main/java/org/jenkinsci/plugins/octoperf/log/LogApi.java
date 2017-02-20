@@ -10,10 +10,10 @@ import java.util.Set;
 
 public interface LogApi {
 
-  @GET("/logs/{benchResultId}")
+  @GET("/analysis/logs/list/{benchResultId}")
   Call<Set<String>> getFiles(@Path("benchResultId") String benchResultId);
-  
-  @GET("/logs/{benchResultId}/download")
+
+  @GET("/analysis/logs/{benchResultId}")
   Call<ResponseBody> getFile(
       @Path("benchResultId") String benchResultId,
       @Query("filename") String filename);

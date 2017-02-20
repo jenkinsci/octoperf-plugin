@@ -21,7 +21,7 @@ import com.google.common.testing.NullPointerTester;
 
 import hudson.model.Item;
 
-public class JenkinsCredentialsServiceTest {
+public class JenkinsSecurityTokenServiceTest {
 
   private final CredentialsService service = new JenkinsCredentialsService();
 

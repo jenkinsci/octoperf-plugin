@@ -12,7 +12,7 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
 
-public class OctoperfCredentialsImplTest {
+public class OctoperfSecurityTokenImplTest {
 
   @Rule 
   public final JenkinsRule jenkins = new JenkinsRule();

@@ -4,13 +4,12 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.Extension;
 import hudson.util.FormValidation;
-import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
-import org.jenkinsci.plugins.octoperf.project.Project;
-import org.jenkinsci.plugins.octoperf.project.ProjectApi;
+import org.jenkinsci.plugins.octoperf.workspace.Workspace;
+import org.jenkinsci.plugins.octoperf.workspace.WorkspacesApi;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import retrofit2.Response;
@@ -20,8 +19,6 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.List;
 
-import static com.cloudbees.plugins.credentials.CredentialsScope.GLOBAL;
-import static org.jenkinsci.plugins.octoperf.OctoperfBuilder.DESCRIPTOR;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 
 /**
@@ -49,26 +46,19 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
 
     @Override
     public String getDisplayName() {
-      return "Octoperf Account";
-    }
-
-    @Override
-    public ListBoxModel doFillScopeItems() {
-      final ListBoxModel m = new ListBoxModel();
-      m.add(GLOBAL.getDisplayName(), GLOBAL.toString());
-      return m;
+      return "OctoPerf Account";
     }
 
     // Used by global.jelly to authenticate User key
     public FormValidation doTestLogin(
       @QueryParameter("username") final String username,
       @QueryParameter("password") final Secret password) throws MessagingException, IOException, ServletException {
-      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(DESCRIPTOR.getOctoperfURL(), System.out);
+      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(OctoperfBuilder.DESCRIPTOR.getOctoperfURL(), System.out);
       pair.getRight().onUsernameAndPassword(username, password.getPlainText());
       // Get projects to test authentication
       final RestApiFactory factory = pair.getLeft();
-      final ProjectApi api = factory.create(ProjectApi.class);
-      final Response<List<Project>> response = api.getProjects().execute();
+      final WorkspacesApi api = factory.create(WorkspacesApi.class);
+      final Response<List<Workspace>> response = api.memberOf().execute();
       if(response.isSuccessful()) {
         return FormValidation.ok("Successfully logged in!");
       }

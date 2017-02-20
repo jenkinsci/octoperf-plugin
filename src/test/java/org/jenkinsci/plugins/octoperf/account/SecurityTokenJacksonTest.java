@@ -1,30 +1,29 @@
 package org.jenkinsci.plugins.octoperf.account;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
- * Tests {@link Credentials}.
+ * Tests {@link SecurityToken}.
  * 
  * @author jerome
  *
  */
-public class CredentialsJacksonTest {
+public class SecurityTokenJacksonTest {
   
   private final ObjectMapper mapper = new ObjectMapper();
   
   @Test
   public void shouldJacksonSerializeCorrectly() throws IOException {
-    final Credentials dto = new Credentials("tokenKey", "userId");
+    final SecurityToken dto = new SecurityToken("tokenKey", DateTime.now());
     
     final String json = mapper.writeValueAsString(dto);
-    final Credentials fromJson = mapper.readValue(json, Credentials.class);
+    final SecurityToken fromJson = mapper.readValue(json, SecurityToken.class);
     assertEquals(dto, fromJson);
   }
 }

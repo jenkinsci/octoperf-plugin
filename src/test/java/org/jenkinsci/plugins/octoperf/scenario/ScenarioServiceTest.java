@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
 import com.google.common.testing.NullPointerTester;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.project.Project;
@@ -9,6 +9,9 @@ import org.jenkinsci.plugins.octoperf.project.ProjectApi;
 import org.jenkinsci.plugins.octoperf.project.ProjectTest;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 import org.jenkinsci.plugins.octoperf.report.BenchReportTest;
+import org.jenkinsci.plugins.octoperf.workspace.Workspace;
+import org.jenkinsci.plugins.octoperf.workspace.WorkspaceTest;
+import org.jenkinsci.plugins.octoperf.workspace.WorkspacesApi;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,13 +44,18 @@ public class ScenarioServiceTest {
   ScenarioApi api;
   @Mock
   ProjectApi projectApi;
+  @Mock
+  WorkspacesApi workspacesApi;
 
   @Before
   public void before() throws IOException {
     when(retrofit.create(ScenarioApi.class)).thenReturn(api);
     when(retrofit.create(ProjectApi.class)).thenReturn(projectApi);
+    when(retrofit.create(WorkspacesApi.class)).thenReturn(workspacesApi);
     final List<Project> projects = ImmutableList.of(ProjectTest.newInstance());
-    when(projectApi.getProjects()).thenReturn(Calls.response(projects));
+    when(projectApi.getProjects(anyString())).thenReturn(Calls.response(projects));
+    final List<Workspace> workspaces = ImmutableList.of(WorkspaceTest.newInstance());
+    when(workspacesApi.memberOf()).thenReturn(Calls.response(workspaces));
   }
   
   @Test
@@ -74,9 +82,10 @@ public class ScenarioServiceTest {
   @Test
   public void shouldListScenariosPerProject() throws IOException{
     when(api.list(SCENARIO.getProjectId())).thenReturn(Calls.response((List<Scenario>)ImmutableList.of(SCENARIO)));
-    final Multimap<Project, Scenario> multimap = SCENARIOS.getScenariosByProject(retrofit);
-    assertFalse(multimap.isEmpty());
-    verify(projectApi).getProjects();
+    final Table<Workspace, Project, Scenario> table = SCENARIOS.getScenariosByProject(retrofit);
+    assertFalse(table.isEmpty());
+    verify(workspacesApi).memberOf();
+    verify(projectApi).getProjects(anyString());
     verify(retrofit).create(ScenarioApi.class);
     verify(api).list(anyString());
   }

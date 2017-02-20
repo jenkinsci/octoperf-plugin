@@ -6,6 +6,6 @@ import retrofit2.http.Path;
 
 public interface MetricsApi {
   
-  @GET("/metrics/global/{benchResultId}")
+  @GET("/analysis/metrics/global/{benchResultId}")
   Call<MetricValues> getMetrics(@Path("benchResultId") String benchResultId);
 }

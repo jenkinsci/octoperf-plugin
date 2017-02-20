@@ -20,7 +20,6 @@ import org.jenkinsci.plugins.octoperf.result.BenchResult;
 import org.jenkinsci.plugins.octoperf.result.BenchResultState;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -37,7 +36,8 @@ import static org.jenkinsci.plugins.octoperf.log.LogService.LOGS;
 import static org.jenkinsci.plugins.octoperf.metrics.MetricsService.METRICS;
 import static org.jenkinsci.plugins.octoperf.report.BenchReportService.BENCH_REPORTS;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
-import static org.jenkinsci.plugins.octoperf.result.BenchResultState.*;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ABORTED;
+import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ERROR;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.joda.time.format.DateTimeFormat.forPattern;
 
@@ -106,11 +106,9 @@ public class OctoperfBuilder extends Builder {
     }
     
     final BenchResult result = BENCH_RESULTS.find(apiFactory, report.getBenchResultId());
-    final Duration duration = Duration.millis(result.getDurationInMs());
-    logger.println("Expected test duration: " + duration.toPeriod());
-    
+
     logger.println("Launching test..");
-    BenchResultState currentState = PENDING;
+    BenchResultState currentState;
 
     Optional<DateTime> startTime = Optional.absent();
     while(true) {
@@ -126,8 +124,9 @@ public class OctoperfBuilder extends Builder {
         
         final MetricValues metrics = METRICS.getMetrics(apiFactory, result.getId());
         final String printable = METRICS.toPrintable(startTime.get(), metrics);
-        logger.println(DATE_FORMAT.print(now) + " - " + printable);
-        
+        final String nowStr = DATE_FORMAT.print(now);
+        logger.println(nowStr + " - " + printable);
+        logger.println(nowStr + " - " + BENCH_RESULTS.getProgress(apiFactory, result.getId()));
       } else if(currentState.isTerminalState()) {
         logger.println("Test finished with state: " + currentState);
         break;

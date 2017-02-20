@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
@@ -16,7 +17,7 @@ import retrofit2.http.POST;
 public interface AccountApi {
 
   /**
-   * Logs in the user and sends back {@link Credentials} if login is successful.
+   * Logs in the user and sends back {@link SecurityToken} if login is successful.
    * 
    * @param username user username
    * @param password user password
@@ -24,5 +25,8 @@ public interface AccountApi {
    */
   @POST("/user/unsecure/login")
   @FormUrlEncoded
-  Call<Credentials> login(@Field("username") String username, @Field("password") String password);
+  Call<SecurityToken> login(@Field("username") String username, @Field("password") String password);
+
+  @GET("/user/refreshToken")
+  Call<SecurityToken> refreshToken();
 }

@@ -21,16 +21,17 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectServiceTest {
-  
+
+  public static final String WORKSPACE_ID = "workspaceId";
   @Mock
   RestApiFactory apiFactory;
   @Mock
   ProjectApi api;
-  
+
   @Before
   public void before() {
     when(apiFactory.create(ProjectApi.class)).thenReturn(api);
-    when(api.getProjects()).thenReturn(Calls.response((List<Project>) ImmutableList.of(ProjectTest.newInstance())));
+    when(api.getProjects(WORKSPACE_ID)).thenReturn(Calls.response((List<Project>) ImmutableList.of(ProjectTest.newInstance())));
   }
   
   @Test
@@ -40,9 +41,9 @@ public class ProjectServiceTest {
   
   @Test
   public void shouldGetProjects() throws IOException{
-    final List<Project> projects = PROJECTS.getProjects(apiFactory);
+    final List<Project> projects = PROJECTS.getProjects(apiFactory, WORKSPACE_ID);
     assertNotNull(projects);
     verify(apiFactory).create(ProjectApi.class);
-    verify(api).getProjects();
+    verify(api).getProjects(WORKSPACE_ID);
   }
 }

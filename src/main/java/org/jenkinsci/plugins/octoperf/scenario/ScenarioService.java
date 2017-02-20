@@ -1,9 +1,11 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
+import org.jenkinsci.plugins.octoperf.workspace.Workspace;
 
 import java.io.IOException;
 
@@ -43,5 +45,5 @@ public interface ScenarioService {
    * @param apiFactory rest adapter
    * @return project to scenarios multimap
    */
-  Multimap<Project, Scenario> getScenariosByProject(RestApiFactory apiFactory) throws IOException;
+  Table<Workspace, Project, Scenario> getScenariosByProject(RestApiFactory apiFactory) throws IOException;
 }

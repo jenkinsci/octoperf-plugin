@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.octoperf.result;
 
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
-import retrofit2.Retrofit;
 
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ public interface BenchResultService {
   /**
    * {@link BenchResultService} singleton instance.
    */
-  static BenchResultService BENCH_RESULTS = new RestBenchResultService();
+  BenchResultService BENCH_RESULTS = new RestBenchResultService();
 
   /**
    * Finds a bench result by its id.
@@ -31,6 +30,8 @@ public interface BenchResultService {
    * @return
    */
   BenchResultState getState(RestApiFactory apiFactory, String benchResultId) throws IOException;
+
+  Double getProgress(RestApiFactory apiFactory, String benchResultId) throws IOException;
 
   /**
    * Returns true when the bench result is finished.

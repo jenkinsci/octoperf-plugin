@@ -1,18 +1,15 @@
 package org.jenkinsci.plugins.octoperf.result;
 
+import com.google.common.testing.NullPointerTester;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
+
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ABORTED;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultState.FINISHED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-
-import org.jenkinsci.plugins.octoperf.result.BenchResult;
-import org.junit.Test;
-
-import com.google.common.testing.NullPointerTester;
-
-import nl.jqno.equalsverifier.EqualsVerifier;
 
 /**
  * Tests {@link BenchResult}.
@@ -47,7 +44,7 @@ public class BenchResultTest {
   }
   
   public static BenchResult newInstance() {
-    return new BenchResult("id", "designProjectId",3600*1000, FINISHED);
+    return new BenchResult("id", "designProjectId", FINISHED);
   }
   
 }

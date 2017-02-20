@@ -7,6 +7,6 @@ import retrofit2.http.Path;
 
 public interface JUnitReportApi {
 
-  @GET("/junit/report/{benchResultId}")
+  @GET("/analysis/junit-reports/{benchResultId}")
   Call<ResponseBody> getReport(@Path("benchResultId") String benchResultId);
 }

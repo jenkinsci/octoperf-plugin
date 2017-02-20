@@ -1,5 +1,5 @@
 /**
- * Credentials Management.
+ * SecurityToken Management.
  * 
  * @author jerome
  *

@@ -1,12 +1,14 @@
 package org.jenkinsci.plugins.octoperf.client;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.net.HttpHeaders;
 import okhttp3.Interceptor;
 import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jenkinsci.plugins.octoperf.account.AccountApi;
-import org.jenkinsci.plugins.octoperf.account.Credentials;
+import org.jenkinsci.plugins.octoperf.account.SecurityToken;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +21,14 @@ import retrofit2.mock.Calls;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UsernamePasswordRestClientAuthenticationTest {
@@ -50,6 +57,7 @@ public class UsernamePasswordRestClientAuthenticationTest {
     authenticator = new UsernamePasswordRestClientAuthentication(accountApi, System.out);
     request = new Request.Builder().url("https://octoperf.com").build();
     response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(200).build();
+    when(accountApi.refreshToken()).thenReturn(Calls.response(new SecurityToken("refreshToken", DateTime.now().plusHours(1))));
   }
 
   @Test
@@ -62,7 +70,7 @@ public class UsernamePasswordRestClientAuthenticationTest {
 
   @Test
   public void shouldNotAuthenticateWithoutCredentials() throws IOException {
-    final Call<Credentials> call = Calls.failure(new IOException());
+    final Call<SecurityToken> call = Calls.failure(new IOException());
     when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
     assertNull(authenticator.authenticate(null, response));
@@ -70,16 +78,32 @@ public class UsernamePasswordRestClientAuthenticationTest {
   }
 
   @Test
-  public void shouldAuthenticate() throws IOException {
-    final Call<Credentials> call = Calls.response(new Credentials("id", "userId"));
+  public void shouldAuthenticateAndRefresh() throws IOException {
+    final Call<SecurityToken> call = Calls.response(new SecurityToken("id", DateTime.now().minusHours(2)));
     when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
     final Request request = authenticator.authenticate(null, response);
     assertNotNull(request);
-    assertEquals("id", request.header(RestClientAuthenticator.AUTHENTICATION_HEADER));
+    assertEquals("Bearer id", request.header(HttpHeaders.AUTHORIZATION));
     when(chain.request()).thenReturn(request);
     authenticator.intercept(chain);
     verify(chain).proceed(captor.capture());
-    assertEquals("id", captor.getValue().header(RestClientAuthenticator.AUTHENTICATION_HEADER));
+    assertEquals("Bearer refreshToken", captor.getValue().header(HttpHeaders.AUTHORIZATION));
+    verify(accountApi).refreshToken();
+  }
+
+  @Test
+  public void shouldAuthenticateWithoutRefresh() throws IOException {
+    final Call<SecurityToken> call = Calls.response(new SecurityToken("id", DateTime.now().plusHours(1)));
+    when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
+    authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
+    final Request request = authenticator.authenticate(null, response);
+    assertNotNull(request);
+    assertEquals("Bearer id", request.header(HttpHeaders.AUTHORIZATION));
+    when(chain.request()).thenReturn(request);
+    authenticator.intercept(chain);
+    verify(chain).proceed(captor.capture());
+    assertEquals("Bearer id", captor.getValue().header(HttpHeaders.AUTHORIZATION));
+    verify(accountApi, never()).refreshToken();
   }
 }

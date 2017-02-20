@@ -10,9 +10,9 @@ import java.util.List;
 final class RetrofitProjectService implements ProjectService {
 
   @Override
-  public List<Project> getProjects(final RestApiFactory apiFactory) throws IOException {
+  public List<Project> getProjects(final RestApiFactory apiFactory, final String workspaceId) throws IOException {
     final ProjectApi api = apiFactory.create(ProjectApi.class);
-    final Response<List<Project>> response = api.getProjects().execute();
+    final Response<List<Project>> response = api.getProjects(workspaceId).execute();
     return response.body();
   }
 
