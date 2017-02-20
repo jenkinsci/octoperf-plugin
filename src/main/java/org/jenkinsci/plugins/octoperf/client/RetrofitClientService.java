@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.octoperf.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,9 +15,12 @@ final class RetrofitClientService implements RestClientService {
   @Override
   public Pair<RestApiFactory, RestClientAuthenticator> create(final String apiUrl, final PrintStream logger) {
 
+    final ObjectMapper mapper = new ObjectMapper();
+    mapper.findAndRegisterModules();
+
     final Retrofit unauthenticatedClient = new Retrofit
         .Builder()
-        .addConverterFactory(JacksonConverterFactory.create())
+        .addConverterFactory(JacksonConverterFactory.create(mapper))
         .client(new OkHttpClient.Builder().build())
         .baseUrl(apiUrl)
         .build();
@@ -25,7 +29,7 @@ final class RetrofitClientService implements RestClientService {
 
     final Retrofit client = new Retrofit
         .Builder()
-        .addConverterFactory(JacksonConverterFactory.create())
+        .addConverterFactory(JacksonConverterFactory.create(mapper))
         .client(new OkHttpClient.Builder().authenticator(authenticator).addNetworkInterceptor(authenticator).build())
         .baseUrl(apiUrl)
         .build();

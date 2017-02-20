@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.jenkinsci.plugins.octoperf.date.DateService.DATES;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -16,14 +17,19 @@ import static org.junit.Assert.assertEquals;
  */
 public class SecurityTokenJacksonTest {
   
-  private final ObjectMapper mapper = new ObjectMapper();
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+
+  static {
+    MAPPER.findAndRegisterModules();
+  }
   
   @Test
   public void shouldJacksonSerializeCorrectly() throws IOException {
-    final SecurityToken dto = new SecurityToken("tokenKey", DateTime.now());
+    final DateTime now = DATES.now();
+    final SecurityToken dto = new SecurityToken("tokenKey", now);
     
-    final String json = mapper.writeValueAsString(dto);
-    final SecurityToken fromJson = mapper.readValue(json, SecurityToken.class);
+    final String json = MAPPER.writeValueAsString(dto);
+    final SecurityToken fromJson = MAPPER.readValue(json, SecurityToken.class);
     assertEquals(dto, fromJson);
   }
 }

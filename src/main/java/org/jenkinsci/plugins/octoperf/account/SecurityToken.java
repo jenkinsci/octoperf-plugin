@@ -22,7 +22,7 @@ public class SecurityToken {
 
   @JsonCreator
   public SecurityToken(
-      @JsonProperty("refreshToken") final String token,
+      @JsonProperty("token") final String token,
       @JsonProperty("expiresAt") final DateTime expiresAt) {
     super();
     this.token = checkNotNull(token);
