@@ -25,7 +25,7 @@ final class RetrofitClientService implements RestClientService {
         .baseUrl(apiUrl)
         .build();
 
-    final RestClientAuthenticator authenticator = new UsernamePasswordRestClientAuthentication(unauthenticatedClient.create(AccountApi.class), logger);
+    final RestClientAuthenticator authenticator = new BearerClientAuthentication(unauthenticatedClient.create(AccountApi.class), logger);
 
     final Retrofit client = new Retrofit
         .Builder()

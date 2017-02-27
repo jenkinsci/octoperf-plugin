@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface WorkspacesApi {
 
-  @GET("/design/workspaces/member-of")
+  @GET("/workspaces/member-of")
   Call<List<Workspace>> memberOf();
 }

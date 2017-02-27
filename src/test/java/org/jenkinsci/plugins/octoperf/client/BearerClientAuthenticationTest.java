@@ -31,14 +31,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UsernamePasswordRestClientAuthenticationTest {
+public class BearerClientAuthenticationTest {
 
   public static final String USERNAME = "username";
   @VisibleForTesting
   static final String NONE = "none";
   public static final String PASSWORD = "password";
 
-  private UsernamePasswordRestClientAuthentication authenticator;
+  private BearerClientAuthentication authenticator;
 
   @Mock
   private AccountApi accountApi;
@@ -54,7 +54,7 @@ public class UsernamePasswordRestClientAuthenticationTest {
 
   @Before
   public void before() {
-    authenticator = new UsernamePasswordRestClientAuthentication(accountApi, System.out);
+    authenticator = new BearerClientAuthentication(accountApi, System.out);
     request = new Request.Builder().url("https://octoperf.com").build();
     response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(200).build();
     when(accountApi.refreshToken()).thenReturn(Calls.response(new SecurityToken("refreshToken", DateTime.now().plusHours(1))));

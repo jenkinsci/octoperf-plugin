@@ -26,7 +26,7 @@ import static com.google.common.net.HttpHeaders.AUTHORIZATION;
  * @author gerald
  *
  */
-final class UsernamePasswordRestClientAuthentication implements RestClientAuthenticator {
+final class BearerClientAuthentication implements RestClientAuthenticator {
 
   private static final String BEARER = "Bearer ";
   private static final Duration FIVE_MINUTES = Duration.standardMinutes(5);
@@ -37,7 +37,7 @@ final class UsernamePasswordRestClientAuthentication implements RestClientAuthen
   private final AccountApi accountApi;
   private final PrintStream logger;
 
-  UsernamePasswordRestClientAuthentication(final AccountApi accountApi, final PrintStream logger){
+  BearerClientAuthentication(final AccountApi accountApi, final PrintStream logger){
     this.accountApi = checkNotNull(accountApi);
     this.logger = checkNotNull(logger);
   }

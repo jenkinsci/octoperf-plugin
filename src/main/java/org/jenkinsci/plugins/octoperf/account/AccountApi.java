@@ -23,10 +23,10 @@ public interface AccountApi {
    * @param password user password
    * @return credentials if success, else {@link Optional#absent()}
    */
-  @POST("/user/unsecure/login")
+  @POST("/public/users/login")
   @FormUrlEncoded
   Call<SecurityToken> login(@Field("username") String username, @Field("password") String password);
 
-  @GET("/user/refreshToken")
+  @GET("/users/refresh-token")
   Call<SecurityToken> refreshToken();
 }

@@ -25,11 +25,6 @@ final class JodaDateService implements DateService {
   }
   
   @Override
-  public DateTimeZone dateTimeZone() {
-    return timeZone;
-  }
-
-  @Override
   public DateTime now() {
     return DateTime.now(timeZone);
   }
