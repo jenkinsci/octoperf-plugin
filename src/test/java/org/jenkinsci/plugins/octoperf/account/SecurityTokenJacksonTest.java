@@ -26,7 +26,7 @@ public class SecurityTokenJacksonTest {
   @Test
   public void shouldJacksonSerializeCorrectly() throws IOException {
     final DateTime now = DATES.now();
-    final SecurityToken dto = new SecurityToken("tokenKey", now);
+    final SecurityToken dto = new SecurityToken("tokenKey");
     
     final String json = MAPPER.writeValueAsString(dto);
     final SecurityToken fromJson = MAPPER.readValue(json, SecurityToken.class);

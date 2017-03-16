@@ -8,7 +8,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.jenkinsci.plugins.octoperf.account.AccountApi;
 import org.jenkinsci.plugins.octoperf.account.SecurityToken;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +56,7 @@ public class BearerClientAuthenticationTest {
     authenticator = new BearerClientAuthentication(accountApi, System.out);
     request = new Request.Builder().url("https://octoperf.com").build();
     response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(200).build();
-    when(accountApi.refreshToken()).thenReturn(Calls.response(new SecurityToken("refreshToken", DateTime.now().plusHours(1))));
+    when(accountApi.refreshToken()).thenReturn(Calls.response(new SecurityToken("refreshToken")));
   }
 
   @Test
@@ -78,23 +77,8 @@ public class BearerClientAuthenticationTest {
   }
 
   @Test
-  public void shouldAuthenticateAndRefresh() throws IOException {
-    final Call<SecurityToken> call = Calls.response(new SecurityToken("id", DateTime.now().minusHours(2)));
-    when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
-    authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
-    final Request request = authenticator.authenticate(null, response);
-    assertNotNull(request);
-    assertEquals("Bearer id", request.header(HttpHeaders.AUTHORIZATION));
-    when(chain.request()).thenReturn(request);
-    authenticator.intercept(chain);
-    verify(chain).proceed(captor.capture());
-    assertEquals("Bearer refreshToken", captor.getValue().header(HttpHeaders.AUTHORIZATION));
-    verify(accountApi).refreshToken();
-  }
-
-  @Test
-  public void shouldAuthenticateWithoutRefresh() throws IOException {
-    final Call<SecurityToken> call = Calls.response(new SecurityToken("id", DateTime.now().plusHours(1)));
+  public void shouldAuthenticate() throws IOException {
+    final Call<SecurityToken> call = Calls.response(new SecurityToken("id"));
     when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
     final Request request = authenticator.authenticate(null, response);

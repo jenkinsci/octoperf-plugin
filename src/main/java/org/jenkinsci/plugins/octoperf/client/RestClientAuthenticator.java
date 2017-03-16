@@ -11,7 +11,7 @@ public interface RestClientAuthenticator extends Authenticator, Interceptor {
    * @param password
    */
   void onUsernameAndPassword(final String username, final String password);
-  
+
   /**
    * Logs out the client.
    */
