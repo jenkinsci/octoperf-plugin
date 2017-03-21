@@ -31,6 +31,10 @@ final class JMeterLogService implements LogService {
     logsFolder.mkdirs();
     int i = 0;
     for(final String filename : files) {
+      if (filename.contains("-agent")) {
+        continue;
+      }
+
       final String outputFilename = "jmeter-" + i + LOG_EXT;
       final FilePath logFile = new FilePath(logsFolder, outputFilename);
     
