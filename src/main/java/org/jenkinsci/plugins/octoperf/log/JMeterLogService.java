@@ -14,6 +14,7 @@ import java.util.Set;
 
 final class JMeterLogService implements LogService {
   private static final String LOG_EXT = ".log";
+  private static final String JTL_EXT = ".jtl";
   private static final String LOGS_FOLDER = "logs";
   
   @Override
@@ -29,14 +30,22 @@ final class JMeterLogService implements LogService {
     
     final FilePath logsFolder = new FilePath(workspace, LOGS_FOLDER);
     logsFolder.mkdirs();
-    int i = 0;
+    int logs = 0;
+    int jtls = 0;
     for(final String filename : files) {
-      if (filename.contains("-agent")) {
+      String outputFilename = filename.replace(".gz", "");
+      if (filename.endsWith("-agent" + LOG_EXT)) {
         // Skip monitoring agent logs
         continue;
       }
 
-      final String outputFilename = "jmeter-" + i + LOG_EXT;
+      if (outputFilename.endsWith(JTL_EXT)) {
+        outputFilename = "jmeter-" + jtls + JTL_EXT;
+        jtls++;
+      } else if(filename.endsWith(LOG_EXT)) {
+        outputFilename = "jmeter-" + logs + LOG_EXT;
+        logs++;
+      }
       final FilePath logFile = new FilePath(logsFolder, outputFilename);
     
       logger.println("Downloading log file: " + filename);
@@ -60,7 +69,6 @@ final class JMeterLogService implements LogService {
         closer.close();
       }
       logger.println("Archived log file: " + logFile);
-      i++;
     }
   }
 
