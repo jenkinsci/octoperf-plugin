@@ -16,4 +16,11 @@ final class RetrofitProjectService implements ProjectService {
     return response.body();
   }
 
+  @Override
+  public Project find(final RestApiFactory apiFactory, final String id) throws IOException {
+    final ProjectApi api = apiFactory.create(ProjectApi.class);
+    final Response<Project> response = api.find(id).execute();
+    return response.body();
+  }
+
 }

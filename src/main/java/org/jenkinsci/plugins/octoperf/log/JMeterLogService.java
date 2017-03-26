@@ -32,6 +32,7 @@ final class JMeterLogService implements LogService {
     int i = 0;
     for(final String filename : files) {
       if (filename.contains("-agent")) {
+        // Skip monitoring agent logs
         continue;
       }
 

@@ -15,6 +15,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
+import org.jenkinsci.plugins.octoperf.project.Project;
+import org.jenkinsci.plugins.octoperf.project.ProjectService;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 import org.jenkinsci.plugins.octoperf.result.BenchResult;
 import org.jenkinsci.plugins.octoperf.result.BenchResultState;
@@ -90,15 +92,17 @@ public class OctoperfBuilder extends Builder {
     final RestApiFactory apiFactory = pair.getLeft();
 
     final Scenario scenario = SCENARIOS.find(apiFactory, scenarioId);
-    logger.println("Launching scenario with:");
+    logger.println("Launching test with:");
     logger.println("- name: " + scenario.getName() + ",");
     logger.println("- description: " + scenario.getDescription());
     
     BenchReport report;
     try {
       report = SCENARIOS.startTest(apiFactory, scenarioId);
-      logger.println("The scenario has been successfully scheduled for execution!");
-      logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(report));
+      logger.println("Starting test...");
+
+      final Project project = ProjectService.PROJECTS.find(apiFactory, scenario.getProjectId());
+      logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(project.getWorkspaceId(), report));
     } catch(final IOException e) {
       logger.println("Could not start test: " + e);
       e.printStackTrace(logger);
@@ -126,12 +130,12 @@ public class OctoperfBuilder extends Builder {
         final String printable = METRICS.toPrintable(startTime.get(), metrics);
         final String nowStr = DATE_FORMAT.print(now);
         logger.println(nowStr + " - " + printable);
-        logger.println(nowStr + " - Progress: " + BENCH_RESULTS.getProgress(apiFactory, result.getId()) + "%");
+        logger.println(nowStr + " - " + String.format("Progress: %.2f", BENCH_RESULTS.getProgress(apiFactory, result.getId())) + "%");
       } else if(currentState.isTerminalState()) {
         logger.println("Test finished with state: " + currentState);
         break;
       } else {
-        logger.println("Test is starting.. (" + currentState +")");
+        logger.println("Preparing test.. (" + currentState +")");
       }
     }
     

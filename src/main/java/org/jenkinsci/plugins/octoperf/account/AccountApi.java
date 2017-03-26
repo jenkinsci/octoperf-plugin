@@ -5,7 +5,6 @@ import com.google.common.base.Optional;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
@@ -26,7 +25,4 @@ public interface AccountApi {
   @POST("/public/users/login")
   @FormUrlEncoded
   Call<SecurityToken> login(@Field("username") String username, @Field("password") String password);
-
-  @GET("/users/refresh-token")
-  Call<SecurityToken> refreshToken();
 }

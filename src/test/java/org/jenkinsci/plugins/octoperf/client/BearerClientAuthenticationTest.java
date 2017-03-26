@@ -24,7 +24,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,7 +55,6 @@ public class BearerClientAuthenticationTest {
     authenticator = new BearerClientAuthentication(accountApi, System.out);
     request = new Request.Builder().url("https://octoperf.com").build();
     response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(200).build();
-    when(accountApi.refreshToken()).thenReturn(Calls.response(new SecurityToken("refreshToken")));
   }
 
   @Test
@@ -88,6 +86,5 @@ public class BearerClientAuthenticationTest {
     authenticator.intercept(chain);
     verify(chain).proceed(captor.capture());
     assertEquals("Bearer id", captor.getValue().header(HttpHeaders.AUTHORIZATION));
-    verify(accountApi, never()).refreshToken();
   }
 }

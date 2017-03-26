@@ -10,6 +10,9 @@ import java.util.List;
 @VisibleForTesting
 public interface ProjectApi {
 
-  @GET("/design/projects/{workspaceId}/DESIGN")
+  @GET("/design/projects/by-workspace/{workspaceId}/DESIGN")
   Call<List<Project>> getProjects(@Path("workspaceId") String workspaceId);
+
+  @GET("/design/projects/{id}")
+  Call<Project> find(@Path("id") String id);
 }

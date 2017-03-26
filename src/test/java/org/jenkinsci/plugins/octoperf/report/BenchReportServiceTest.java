@@ -1,14 +1,13 @@
 package org.jenkinsci.plugins.octoperf.report;
 
-import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
-import static org.junit.Assert.assertEquals;
-
+import com.google.common.testing.NullPointerTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.testing.NullPointerTester;
+import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BenchReportServiceTest {
@@ -26,7 +25,7 @@ public class BenchReportServiceTest {
   
   @Test
   public void shouldGetBenchReports() {
-    final String reportUrl = RestBenchReportService.BENCH_REPORTS.getReportUrl(REPORT);
-    assertEquals("https://app.octoperf.com/#/app/project/projectId/analysis/benchResultId/id", reportUrl);
+    final String reportUrl = RestBenchReportService.BENCH_REPORTS.getReportUrl("workspacId", REPORT);
+    assertEquals("https://app.octoperf.com/#/app/workspace/workspacId/project/projectId/analysis/benchResultId/id", reportUrl);
   }
 }

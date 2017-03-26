@@ -98,7 +98,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
           final Workspace workspace = entry.getRowKey();
           final Project project = entry.getColumnKey();
           final Scenario scenario = entry.getValue();
-          final String displayName = workspace + ARROW + project.getName() + ARROW + scenario.getName();
+          final String displayName = workspace.getName() + ARROW + project.getName() + ARROW + scenario.getName();
           items.add(displayName, scenario.getId());
         }
       } catch (IOException e) {

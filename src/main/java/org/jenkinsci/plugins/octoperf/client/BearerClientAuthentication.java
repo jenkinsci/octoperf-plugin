@@ -74,7 +74,6 @@ final class BearerClientAuthentication implements RestClientAuthenticator {
   public void onLogout() {
     this.username = Optional.absent();
     this.password = Optional.absent();
-
   }
 
   @Override
