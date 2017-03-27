@@ -81,7 +81,7 @@ public class ScenarioServiceTest {
   
   @Test
   public void shouldListScenariosPerProject() throws IOException{
-    when(api.list(SCENARIO.getProjectId())).thenReturn(Calls.response((List<Scenario>)ImmutableList.of(SCENARIO)));
+    when(api.list(anyString())).thenReturn(Calls.response((List<Scenario>)ImmutableList.of(SCENARIO)));
     final Table<Workspace, Project, Scenario> table = SCENARIOS.getScenariosByProject(retrofit);
     assertFalse(table.isEmpty());
     verify(workspacesApi).memberOf();
