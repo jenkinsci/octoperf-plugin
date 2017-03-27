@@ -25,7 +25,7 @@ public class BenchReportServiceTest {
   
   @Test
   public void shouldGetBenchReports() {
-    final String reportUrl = RestBenchReportService.BENCH_REPORTS.getReportUrl("workspacId", REPORT);
-    assertEquals("https://app.octoperf.com/#/app/workspace/workspacId/project/projectId/analysis/benchResultId/id", reportUrl);
+    final String reportUrl = RestBenchReportService.BENCH_REPORTS.getReportUrl("workspaceId", "resultProjectId", REPORT);
+    assertEquals("https://app.octoperf.com/#/app/workspace/workspaceId/project/projectId/analysis/resultProjectId/benchResultId/id", reportUrl);
   }
 }

@@ -95,22 +95,26 @@ public class OctoperfBuilder extends Builder {
     logger.println("Launching test with:");
     logger.println("- name: " + scenario.getName() + ",");
     logger.println("- description: " + scenario.getDescription());
-    
+
+    final BenchResult result;
+
     BenchReport report;
     try {
       report = SCENARIOS.startTest(apiFactory, scenarioId);
+      result = BENCH_RESULTS.find(apiFactory, report.getBenchResultId());
       logger.println("Starting test...");
 
       final Project project = ProjectService.PROJECTS.find(apiFactory, scenario.getProjectId());
-      logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(project.getWorkspaceId(), report));
+      logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(
+        project.getWorkspaceId(),
+        result.getResultProjectId(),
+        report));
     } catch(final IOException e) {
       logger.println("Could not start test: " + e);
       e.printStackTrace(logger);
       return false;
     }
     
-    final BenchResult result = BENCH_RESULTS.find(apiFactory, report.getBenchResultId());
-
     logger.println("Launching test..");
     BenchResultState currentState;
 

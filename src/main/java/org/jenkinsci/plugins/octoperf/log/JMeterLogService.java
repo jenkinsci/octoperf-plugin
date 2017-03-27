@@ -9,13 +9,18 @@ import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import retrofit2.Call;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Set;
 
 final class JMeterLogService implements LogService {
   private static final String LOG_EXT = ".log";
   private static final String JTL_EXT = ".jtl";
   private static final String LOGS_FOLDER = "logs";
+  private static final String JTLS_FOLDER = "jtls";
   
   @Override
   public void downloadLogFiles(
@@ -29,7 +34,13 @@ final class JMeterLogService implements LogService {
     logger.println("Available log files: " + files);
     
     final FilePath logsFolder = new FilePath(workspace, LOGS_FOLDER);
+    logsFolder.deleteContents();
     logsFolder.mkdirs();
+
+    final FilePath jtlsFolder = new FilePath(workspace, JTLS_FOLDER);
+    jtlsFolder.deleteContents();
+    jtlsFolder.mkdirs();
+
     int logs = 0;
     int jtls = 0;
     for(final String filename : files) {
@@ -39,15 +50,17 @@ final class JMeterLogService implements LogService {
         continue;
       }
 
+      final FilePath logFile;
       if (outputFilename.endsWith(JTL_EXT)) {
-        outputFilename = "jmeter-" + jtls + JTL_EXT;
+        logFile = new FilePath(jtlsFolder, "jmeter-" + jtls + JTL_EXT);
         jtls++;
       } else if(filename.endsWith(LOG_EXT)) {
-        outputFilename = "jmeter-" + logs + LOG_EXT;
+        logFile = new FilePath(logsFolder, "jmeter-" + logs + LOG_EXT);
         logs++;
+      } else {
+        continue;
       }
-      final FilePath logFile = new FilePath(logsFolder, outputFilename);
-    
+
       logger.println("Downloading log file: " + filename);
       final Call<ResponseBody> response = api.getFile(benchResultId, filename);
       final ResponseBody body = response.execute().body();

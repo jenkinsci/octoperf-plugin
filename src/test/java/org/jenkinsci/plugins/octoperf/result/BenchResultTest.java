@@ -44,7 +44,7 @@ public class BenchResultTest {
   }
   
   public static BenchResult newInstance() {
-    return new BenchResult("id", "designProjectId", FINISHED);
+    return new BenchResult("id", "designProjectId", "resultProjectId", FINISHED);
   }
   
 }

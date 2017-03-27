@@ -1,13 +1,11 @@
 package org.jenkinsci.plugins.octoperf.project;
 
-import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
-import static org.junit.Assert.assertNotNull;
-
+import com.google.common.testing.NullPointerTester;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-import com.google.common.testing.NullPointerTester;
-
-import nl.jqno.equalsverifier.EqualsVerifier;
+import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests {@link Project}.
@@ -34,7 +32,7 @@ public class ProjectTest {
   }
   
   public static Project newInstance() {
-    return new Project("projectId", "name");
+    return new Project("designProjectId", "resultProjectId", "name");
   }
   
 }
