@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.octoperf;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Table;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.tasks.BuildStepDescriptor;
@@ -9,6 +8,7 @@ import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.project.Project;
@@ -20,6 +20,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.jenkinsci.plugins.octoperf.Constants.DEFAULT_API_URL;
@@ -93,11 +94,11 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
       pair.getRight().onUsernameAndPassword(username, password);
 
       try {
-        final Table<Workspace, Project, Scenario> scenariosByProject = SCENARIOS.getScenariosByProject(apiFactory);
-        for (final Table.Cell<Workspace, Project, Scenario> entry : scenariosByProject.cellSet()) {
-          final Workspace workspace = entry.getRowKey();
-          final Project project = entry.getColumnKey();
-          final Scenario scenario = entry.getValue();
+        final List<Triple<Workspace, Project, Scenario>> scenariosByProject = SCENARIOS.getScenariosByProject(apiFactory);
+        for (final Triple<Workspace, Project, Scenario> entry : scenariosByProject) {
+          final Workspace workspace = entry.getLeft();
+          final Project project = entry.getMiddle();
+          final Scenario scenario = entry.getRight();
           final String displayName = workspace.getName() + ARROW + project.getName() + ARROW + scenario.getName();
           items.add(displayName, scenario.getId());
         }

@@ -1,8 +1,8 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Table;
 import com.google.common.testing.NullPointerTester;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.project.ProjectApi;
@@ -82,7 +82,7 @@ public class ScenarioServiceTest {
   @Test
   public void shouldListScenariosPerProject() throws IOException{
     when(api.list(anyString())).thenReturn(Calls.response((List<Scenario>)ImmutableList.of(SCENARIO)));
-    final Table<Workspace, Project, Scenario> table = SCENARIOS.getScenariosByProject(retrofit);
+    final List<Triple<Workspace, Project, Scenario>> table = SCENARIOS.getScenariosByProject(retrofit);
     assertFalse(table.isEmpty());
     verify(workspacesApi).memberOf();
     verify(projectApi).getProjects(anyString());
