@@ -54,14 +54,14 @@ final class JMeterLogService implements LogService {
       if (outputFilename.endsWith(JTL_EXT)) {
         logFile = new FilePath(jtlsFolder, "jmeter-" + jtls + JTL_EXT);
         jtls++;
-      } else if(filename.endsWith(LOG_EXT)) {
+      } else if(outputFilename.endsWith(LOG_EXT)) {
         logFile = new FilePath(logsFolder, "jmeter-" + logs + LOG_EXT);
         logs++;
       } else {
         continue;
       }
 
-      logger.println("Downloading log file: " + filename);
+      logger.println("Downloading file: " + filename);
       final Call<ResponseBody> response = api.getFile(benchResultId, filename);
       final ResponseBody body = response.execute().body();
       
