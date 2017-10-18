@@ -20,6 +20,7 @@ public interface BenchReportService {
    * @return
    */
   String getReportUrl(
+    String apiUrl,
     String workspaceId,
     String resultProjectId,
     BenchReport report);

@@ -106,6 +106,7 @@ public class OctoperfBuilder extends Builder {
 
       final Project project = ProjectService.PROJECTS.find(apiFactory, scenario.getProjectId());
       logger.println("Bench report is available at: " + BENCH_REPORTS.getReportUrl(
+        apiUrl,
         project.getWorkspaceId(),
         result.getResultProjectId(),
         report));

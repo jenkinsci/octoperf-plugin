@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.jenkinsci.plugins.octoperf.Constants.DEFAULT_API_URL;
+import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;

@@ -1,6 +1,6 @@
 package org.jenkinsci.plugins.octoperf;
 
-import static org.jenkinsci.plugins.octoperf.Constants.DEFAULT_API_URL;
+import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
