@@ -16,7 +16,7 @@ final class RestBenchReportService implements BenchReportService {
     final String workspaceId,
     final String resultProjectId,
     final BenchReport report) {
-    String baseUrl = Objects.equals(apiUrl, DEFAULT_API_URL) ? SAAS_APP : removeEnd(apiUrl, "/");
+    String baseUrl = Objects.equals(apiUrl, DEFAULT_API_URL) ? SAAS_APP : removeEnd(apiUrl, "/") + "/app";
     return String.format(
       baseUrl + REPORT_URL,
       workspaceId,
