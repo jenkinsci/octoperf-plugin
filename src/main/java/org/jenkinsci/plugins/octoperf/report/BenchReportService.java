@@ -17,7 +17,7 @@ public interface BenchReportService {
    *
    * @param workspaceId workspace id
    * @param report bench report
-   * @return
+   * @return the url of the report
    */
   String getReportUrl(
     String apiUrl,

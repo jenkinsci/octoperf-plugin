@@ -1,0 +1,2 @@
+timeStamp,allThreads,URL,Latency,Encoding,Hostname,IdleTime,Connect
+1511171041883,47,octoperf,200,OK,ThreadGroup 1-5,text,true,7079,247,1,1,https://octoperf.com/pricing/,31,utf-8,uneasy_fit,0,0

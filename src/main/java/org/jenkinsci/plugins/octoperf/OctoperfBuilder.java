@@ -31,6 +31,7 @@ import java.io.PrintStream;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static hudson.model.Result.SUCCESS;
 import static hudson.tasks.BuildStepMonitor.BUILD;
+import static java.util.Optional.*;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.junit.JUnitReportService.JUNIT_REPORTS;
@@ -119,7 +120,7 @@ public class OctoperfBuilder extends Builder {
     logger.println("Launching test..");
     BenchResultState currentState;
 
-    Optional<DateTime> startTime = Optional.absent();
+    java.util.Optional<DateTime> startTime = empty();
     while(true) {
       Thread.sleep(MILLIS);
       
@@ -128,14 +129,15 @@ public class OctoperfBuilder extends Builder {
       if(currentState.isRunning()) {
         final DateTime now = DateTime.now();
         if(!startTime.isPresent()) {
-          startTime = Optional.of(now);
+          startTime = of(now);
         }
         
         final MetricValues metrics = METRICS.getMetrics(apiFactory, result.getId());
         final String printable = METRICS.toPrintable(startTime.get(), metrics);
         final String nowStr = DATE_FORMAT.print(now);
-        logger.println(nowStr + " - " + printable);
-        logger.println(nowStr + " - " + String.format("Progress: %.2f", BENCH_RESULTS.getProgress(apiFactory, result.getId())) + "%");
+
+        final String progress = String.format("[%.2f%%] ", BENCH_RESULTS.getProgress(apiFactory, result.getId()));
+        logger.println(progress + nowStr + " - " + printable);
       } else if(currentState.isTerminalState()) {
         logger.println("Test finished with state: " + currentState);
         break;
@@ -150,8 +152,11 @@ public class OctoperfBuilder extends Builder {
     final FilePath junitReport = JUNIT_REPORTS.saveJUnitReport(workspace, apiFactory, result.getId());
     logger.println("JUnit report saved to: " + junitReport);
     
-    logger.println("Downloading JMeter log files...");
+    logger.println("Downloading JMeter Logs and JTLs...");
     LOGS.downloadLogFiles(workspace, logger, apiFactory, result.getId());
+
+    logger.println("Merging JTLs into a single file...");
+    LOGS.mergeJTLs(workspace, logger);
     
     if(currentState == ERROR) {
       build.setResult(Result.FAILURE);

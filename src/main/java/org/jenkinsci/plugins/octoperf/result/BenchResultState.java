@@ -4,7 +4,7 @@ package org.jenkinsci.plugins.octoperf.result;
 
 
 /**
- * Defines all the states a {@link DockerBatch} can have.
+ * Defines all the states a test result can have.
  * 
  * <p>
  * Once a state has been reached, it should never go back to a previous state.

@@ -27,4 +27,12 @@ public interface LogService {
       PrintStream logger,
       RestApiFactory apiFactory,
       String benchResultId) throws IOException, InterruptedException;
+
+  /**
+   * Merges the JTL files into a single one
+   * @param workspace
+   * @param logger
+   * @throws IOException
+   */
+  void mergeJTLs(FilePath workspace, PrintStream logger) throws IOException, InterruptedException;
 }
