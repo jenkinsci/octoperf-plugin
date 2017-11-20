@@ -54,7 +54,12 @@ public class BearerClientAuthenticationTest {
   public void before() {
     authenticator = new BearerClientAuthentication(accountApi, System.out);
     request = new Request.Builder().url("https://octoperf.com").build();
-    response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(200).build();
+    response = new Response.Builder()
+      .request(request)
+      .message("")
+      .protocol(Protocol.HTTP_1_1)
+      .code(200)
+      .build();
   }
 
   @Test

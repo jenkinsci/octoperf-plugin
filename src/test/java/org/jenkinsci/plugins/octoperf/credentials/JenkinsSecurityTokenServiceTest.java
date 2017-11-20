@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.octoperf.credentials;
 
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.testing.NullPointerTester;
 import org.jenkinsci.plugins.octoperf.OctoperfCredential;
@@ -16,6 +15,7 @@ import java.util.List;
 import static com.cloudbees.plugins.credentials.CredentialsScope.SYSTEM;
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -46,7 +46,7 @@ public class JenkinsSecurityTokenServiceTest {
   @Test
   public void shouldNotFindFirst() {
     final java.util.Optional<OctoperfCredential> first = service.findFirst();
-    assertEquals(Optional.absent(), first);
+    assertEquals(empty(), first);
   }
 
   @Test
@@ -55,13 +55,13 @@ public class JenkinsSecurityTokenServiceTest {
     credentials.getCredentials().add(creds);
     
     final java.util.Optional<OctoperfCredential> first = service.findFirst();
-    assertEquals(Optional.of(creds), first);
+    assertEquals(of(creds), first);
   }
 
   @Test
   public void shouldNotFindById() {
     final java.util.Optional<OctoperfCredential> any = service.find("any");
-    assertEquals(Optional.absent(), any);
+    assertEquals(empty(), any);
   }
 
   @Test
@@ -70,7 +70,7 @@ public class JenkinsSecurityTokenServiceTest {
 
     SystemCredentialsProvider.getInstance().getCredentials().add(creds);
     final java.util.Optional<OctoperfCredential> first = service.find(creds.getId());
-    assertEquals(Optional.of(creds), first);
+    assertEquals(of(creds), first);
   }
 
   @Test
