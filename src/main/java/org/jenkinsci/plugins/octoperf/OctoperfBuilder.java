@@ -1,19 +1,22 @@
 package org.jenkinsci.plugins.octoperf;
 
-import com.google.common.base.Optional;
+import hudson.DescriptorExtensionList;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Descriptor;
 import hudson.model.Result;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
+import jenkins.model.Jenkins;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
+import org.jenkinsci.plugins.octoperf.conditions.TestStopCondition;
 import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.project.ProjectService;
@@ -24,14 +27,20 @@ import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static hudson.model.Result.SUCCESS;
 import static hudson.tasks.BuildStepMonitor.BUILD;
-import static java.util.Optional.*;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.junit.JUnitReportService.JUNIT_REPORTS;
@@ -51,12 +60,11 @@ public class OctoperfBuilder extends Builder {
   public static final OctoperfBuilderDescriptor DESCRIPTOR = new OctoperfBuilderDescriptor();
 
   private static final DateTimeFormatter DATE_FORMAT = forPattern("HH:mm:ss");
-  public static final int MILLIS = 10000;
+  public static final long TEN_SECS = 10_000L;
 
   private final Optional<OctoperfCredential> credentials;
   private final String scenarioId;
-
-  private AbstractBuild<?, ?> build;
+  private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
 
   @DataBoundConstructor
   public OctoperfBuilder(
@@ -77,12 +85,10 @@ public class OctoperfBuilder extends Builder {
       final AbstractBuild<?, ?> build, 
       final Launcher launcher,
       final BuildListener listener) throws InterruptedException, IOException {
-    this.build = build;
-    
     final PrintStream logger = listener.getLogger();
 
-    final OctoperfCredential creds = credentials.orNull(); 
-    logger.println("Username: " + creds.getUsername());
+    final OctoperfCredential creds = credentials.orElse(null);
+    logger.println("Username=" + creds.getUsername());
 
     final String apiUrl = OctoperfBuilder.DESCRIPTOR.getOctoperfURL();
     logger.println("API url: " + apiUrl);
@@ -122,11 +128,15 @@ public class OctoperfBuilder extends Builder {
 
     java.util.Optional<DateTime> startTime = empty();
     while(true) {
-      Thread.sleep(MILLIS);
+      Thread.sleep(TEN_SECS);
       
-      currentState = BENCH_RESULTS.getState(apiFactory, report.getBenchResultId());
-      
+      currentState = BENCH_RESULTS.getState(apiFactory, result.getId());
+
       if(currentState.isRunning()) {
+        for (final TestStopCondition condition : stopConditions) {
+          condition.execute(logger, build, apiFactory, result);
+        }
+
         final DateTime now = DateTime.now();
         if(!startTime.isPresent()) {
           startTime = of(now);
@@ -172,6 +182,23 @@ public class OctoperfBuilder extends Builder {
   @Override
   public OctoperfBuilderDescriptor getDescriptor() {
     return DESCRIPTOR;
+  }
+
+  public List<? extends TestStopCondition> getStopConditions() {
+    return stopConditions;
+  }
+
+  @DataBoundSetter
+  public void setStopConditions(List<? extends TestStopCondition> stopConditions) {
+    this.stopConditions = ofNullable(stopConditions).orElse(new ArrayList<>());
+  }
+
+  /**
+   * Returns all the registered {@link Builder} descriptors.
+   */
+  // for backward compatibility, the signature is not BuildStepDescriptor
+  public static DescriptorExtensionList<Builder,Descriptor<Builder>> all() {
+    return Jenkins.getInstance().<Builder,Descriptor<Builder>>getDescriptorList(Builder.class);
   }
 
 }

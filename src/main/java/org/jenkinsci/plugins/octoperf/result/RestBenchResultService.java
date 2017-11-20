@@ -30,4 +30,12 @@ final class RestBenchResultService implements BenchResultService {
     return state.isTerminalState();
   }
 
+  @Override
+  public void stopTest(
+    final RestApiFactory apiFactory,
+    final BenchResult result) throws IOException {
+    final BenchResultApi api = apiFactory.create(BenchResultApi.class);
+    api.stopTest(result.getId()).execute().body();
+  }
+
 }

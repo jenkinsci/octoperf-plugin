@@ -1,0 +1,13 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:block>
+        <f:entry title="${%Threshold Severity}:" field="severity">
+            <f:select />
+        </f:entry>
+        <f:entry title="${%Mark Build As}:" field="buildResult">
+            <f:select />
+        </f:entry>
+    </f:block>
+</j:jelly>

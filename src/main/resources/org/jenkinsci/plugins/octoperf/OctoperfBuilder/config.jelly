@@ -6,8 +6,13 @@
         <f:select style="width:32em;" field="credentialsId"/>
     </f:entry>
     <f:entry title="${%Scenario}:" field="scenarioId">
-        <f:select>
-        </f:select>
+        <f:select />
     </f:entry>
 
+  <f:entry title="Stop Conditions" field="stopConditions">
+    <f:hetero-list name="stopConditions" hasHeader="true"
+                   descriptors="${descriptor.getStopConditionDescriptors()}"
+                   items="${instance.stopConditions}"
+                   addCaption="${%New Stop Condition}"/>
+   </f:entry>
 </j:jelly>

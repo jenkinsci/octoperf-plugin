@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.octoperf.log;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.io.Closer;
 import hudson.FilePath;
 import okhttp3.ResponseBody;
@@ -25,7 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.lang.System.currentTimeMillis;
 
 final class JMeterLogService implements LogService {
   private static final String LOG_EXT = ".log";
@@ -118,7 +117,7 @@ final class JMeterLogService implements LogService {
 
         logger.println("[Merge] Processing '" + jtl.getName() + "'...");
 
-        final Stopwatch watch = Stopwatch.createStarted();
+        final long start = currentTimeMillis();
 
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(jtl.read(), UTF_8))) {
           final String csvHeader = reader.readLine();
@@ -139,7 +138,7 @@ final class JMeterLogService implements LogService {
           }
         }
 
-        logger.println("[Merge] ... '" + jtl.getName() + "' Done in " + watch.elapsed(SECONDS) + " sec");
+        logger.println("[Merge] ... '" + jtl.getName() + "' Done in " + (currentTimeMillis() - start) + " ms");
 
         // Once merged, delete the file
         jtl.delete();

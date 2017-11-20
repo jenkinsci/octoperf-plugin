@@ -5,7 +5,7 @@
          xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson"
          xmlns:f="/lib/form">
-    <f:section title="Octoperf - Saas Load Testing">
+    <f:section title="OctoPerf - Saas Load Testing">
         <f:entry title="Server URL"
                  field="octoperfURL"
                  description="${%Server URL}">

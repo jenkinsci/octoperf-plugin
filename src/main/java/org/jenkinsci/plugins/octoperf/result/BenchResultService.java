@@ -40,4 +40,11 @@ public interface BenchResultService {
    * @return {@code true} if the result execution is finished
    */
   boolean isFinished(BenchResult benchResult);
+
+  /**
+   * Stops the test.
+   *
+   * @param result bench result
+   */
+  void stopTest(RestApiFactory apiFactory, BenchResult result) throws IOException;
 }

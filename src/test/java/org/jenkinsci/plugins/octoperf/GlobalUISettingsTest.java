@@ -1,24 +1,24 @@
 package org.jenkinsci.plugins.octoperf;
 
-import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.xml.sax.SAXException;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.io.IOException;
+
+import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
+import static org.junit.Assert.assertEquals;
 
 public class GlobalUISettingsTest {
 
   @Rule
   public JenkinsRule jenkins = new JenkinsRule();
+
   public HtmlPage settings;
   public JenkinsRule.WebClient webClient;
 

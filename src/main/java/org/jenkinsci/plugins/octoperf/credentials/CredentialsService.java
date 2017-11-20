@@ -1,11 +1,10 @@
 package org.jenkinsci.plugins.octoperf.credentials;
 
-import java.util.List;
-
-import com.google.common.base.Optional;
-
 import hudson.model.Item;
 import org.jenkinsci.plugins.octoperf.OctoperfCredential;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Facility for manipulating Jenkins SecurityToken.

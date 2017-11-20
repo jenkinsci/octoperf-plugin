@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.octoperf;
 
-import com.google.common.base.Optional;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.tasks.BuildStepDescriptor;
@@ -11,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
+import org.jenkinsci.plugins.octoperf.conditions.StopConditionDescriptor;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.jenkinsci.plugins.octoperf.workspace.Workspace;
@@ -23,8 +23,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
+import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
+import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 
@@ -56,7 +57,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
 
     final Item item = Stapler.getCurrentRequest().findAncestorObject(Item.class);
     boolean isFirst = true;
-    for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, Optional.fromNullable(item))) {
+    for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, ofNullable(item))) {
       final String id = c.getId();
       if (!ids.contains(id)) {
         final ListBoxModel.Option option =
@@ -76,7 +77,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
    * @return combo box model with all scenarios
    */
   public ListBoxModel doFillScenarioIdItems(@QueryParameter("credentialsId") final String credentialsId) {
-    final Optional<OctoperfCredential> optional;
+    final java.util.Optional<OctoperfCredential> optional;
     if (credentialsId.isEmpty()) {
       optional = CREDENTIALS_SERVICE.findFirst();
     } else {
@@ -116,6 +117,10 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     this.octoperfURL = octoperfUrl.isEmpty() ? DEFAULT_API_URL : octoperfUrl;
     save();
     return true;
+  }
+
+  public List<StopConditionDescriptor> getStopConditionDescriptors() {
+    return StopConditionDescriptor.all();
   }
 
   public String getOctoperfURL() {
