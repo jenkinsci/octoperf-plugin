@@ -35,7 +35,7 @@ final class RestBenchResultService implements BenchResultService {
     final RestApiFactory apiFactory,
     final BenchResult result) throws IOException {
     final BenchResultApi api = apiFactory.create(BenchResultApi.class);
-    api.stopTest(result.getId()).execute().body();
+    api.stopTest(result.getId()).execute();
   }
 
 }
