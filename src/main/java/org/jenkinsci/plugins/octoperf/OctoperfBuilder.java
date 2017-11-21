@@ -7,7 +7,6 @@ import hudson.Launcher;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.remoting.Callable;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import static hudson.tasks.BuildStepMonitor.BUILD;
 import static java.util.Objects.requireNonNull;
@@ -81,7 +81,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
     @Nonnull final EnvVars vars) throws InterruptedException, IOException {
     final String serverUrlConfig = OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL();
 
-    final Callable<Result, Exception> build = new OctoPerfBuild(
+    final Callable<Result> build = new OctoPerfBuild(
       listener.getLogger(),
       credentials.map(OctoperfCredential::getUsername).orElse(""),
       credentials.map(OctoperfCredential::getPassword).orElse(null),

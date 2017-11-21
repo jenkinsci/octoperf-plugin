@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.octoperf;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.Result;
-import hudson.remoting.Callable;
 import hudson.util.Secret;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.tuple.Pair;
@@ -17,13 +16,13 @@ import org.jenkinsci.plugins.octoperf.report.BenchReport;
 import org.jenkinsci.plugins.octoperf.result.BenchResult;
 import org.jenkinsci.plugins.octoperf.result.BenchResultState;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
-import org.jenkinsci.remoting.RoleChecker;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import static hudson.model.Result.FAILURE;
 import static java.util.Objects.requireNonNull;
@@ -42,7 +41,7 @@ import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.joda.time.format.DateTimeFormat.forPattern;
 
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class OctoPerfBuild implements Callable<Result, Exception> {
+public class OctoPerfBuild implements Callable<Result> {
   private static final DateTimeFormatter DATE_FORMAT = forPattern("HH:mm:ss");
   public static final long TEN_SECS = 10_000L;
 
@@ -168,10 +167,5 @@ public class OctoPerfBuild implements Callable<Result, Exception> {
     }
 
     return result;
-  }
-
-  @Override
-  public void checkRoles(final RoleChecker roleChecker) throws SecurityException {
-    // Nothing to do
   }
 }
