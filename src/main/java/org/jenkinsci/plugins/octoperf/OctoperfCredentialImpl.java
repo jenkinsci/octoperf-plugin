@@ -28,7 +28,6 @@ import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
  *
  */
 public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl implements OctoperfCredential {
-
   private static final long serialVersionUID = -3802174823289690186L;
 
   @DataBoundConstructor

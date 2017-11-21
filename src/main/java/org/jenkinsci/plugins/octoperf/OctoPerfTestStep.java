@@ -40,6 +40,8 @@ import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RES
 @Getter
 @Setter
 public class OctoPerfTestStep extends Step {
+  private static final long serialVersionUID = -3802154812289490186L;
+
   private String credentialsId = "";
   private String scenarioId = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
