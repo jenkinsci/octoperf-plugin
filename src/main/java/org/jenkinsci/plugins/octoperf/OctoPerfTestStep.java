@@ -6,10 +6,12 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import lombok.Getter;
+import hudson.util.ListBoxModel;
+import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
+import org.jenkinsci.plugins.octoperf.conditions.StopConditionDescriptor;
 import org.jenkinsci.plugins.octoperf.conditions.TestStopCondition;
 import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
@@ -18,6 +20,7 @@ import org.jenkinsci.plugins.workflow.steps.StepExecution;
 import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
@@ -32,21 +36,31 @@ import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
 
-@Getter
+@Data
 public class OctoPerfTestStep extends Step {
-  private final String credentialsId;
-  private final String scenarioId;
+  private String credentialsId = "";
+  private String scenarioId = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
-  private String serverUrl;
+  private String serverUrl = "";
 
   @DataBoundConstructor
   public OctoPerfTestStep(
     final String credentialsId,
     final String scenarioId) {
     super();
-    this.credentialsId = requireNonNull(credentialsId);
-    this.scenarioId = requireNonNull(scenarioId);
+    setCredentialsId(credentialsId);
+    setScenarioId(scenarioId);
     setServerUrl("");
+  }
+
+  @DataBoundSetter
+  public void setCredentialsId(final String credentialsId) {
+    this.credentialsId = nullToEmpty(credentialsId);
+  }
+
+  @DataBoundSetter
+  public void setScenarioId(final String scenarioId) {
+    this.scenarioId = nullToEmpty(scenarioId);
   }
 
   @DataBoundSetter
@@ -149,6 +163,24 @@ public class OctoPerfTestStep extends Step {
     @Override
     public String getDisplayName() {
       return "Runs test in OctoPerf Cloud";
+    }
+
+    public ListBoxModel doFillCredentialsIdItems(final Object scope) {
+      return OctoperfBuilderDescriptor.getDescriptor().doFillCredentialsIdItems(scope);
+    }
+
+    /**
+     * Computes the scenarios list when asked by the UI.
+     *
+     * @param credentialsId credentials id
+     * @return combo box model with all scenarios
+     */
+    public ListBoxModel doFillScenarioIdItems(@QueryParameter("credentialsId") final String credentialsId) {
+      return OctoperfBuilderDescriptor.getDescriptor().doFillScenarioIdItems(credentialsId);
+    }
+
+    public List<StopConditionDescriptor> getStopConditionDescriptors() {
+      return StopConditionDescriptor.all();
     }
   }
 }
