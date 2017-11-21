@@ -33,9 +33,9 @@ final class RestBenchResultService implements BenchResultService {
   @Override
   public void stopTest(
     final RestApiFactory apiFactory,
-    final BenchResult result) throws IOException {
+    final String benchResultId) throws IOException {
     final BenchResultApi api = apiFactory.create(BenchResultApi.class);
-    api.stopTest(result.getId()).execute();
+    api.stopTest(benchResultId).execute();
   }
 
 }

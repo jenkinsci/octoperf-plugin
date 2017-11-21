@@ -1,14 +1,12 @@
 package org.jenkinsci.plugins.octoperf.conditions;
 
 import hudson.Extension;
-import hudson.model.AbstractBuild;
 import hudson.model.Result;
 import hudson.util.ListBoxModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
-import org.jenkinsci.plugins.octoperf.result.BenchResult;
 import org.jenkinsci.plugins.octoperf.threshold.ThresholdSeverity;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -17,6 +15,7 @@ import java.io.PrintStream;
 
 import static hudson.model.Result.ABORTED;
 import static hudson.model.Result.FAILURE;
+import static hudson.model.Result.SUCCESS;
 import static hudson.model.Result.UNSTABLE;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
@@ -26,9 +25,14 @@ import static org.jenkinsci.plugins.octoperf.threshold.ThresholdSeverity.WARNING
 
 @Getter
 @Setter
+@Extension
 public class StopOnAlert extends TestStopCondition {
   private ThresholdSeverity severity = WARNING;
   private Result buildResult = ABORTED;
+
+  public StopOnAlert() {
+    super();
+  }
 
   @DataBoundConstructor
   public StopOnAlert(final ThresholdSeverity severity, final Result buildResult) {
@@ -38,19 +42,21 @@ public class StopOnAlert extends TestStopCondition {
   }
 
   @Override
-  public void execute(
+  public Result execute(
     final PrintStream logger,
-    final AbstractBuild<?, ?> build,
     final RestApiFactory factory,
-    final BenchResult result) throws IOException {
-    if(THRESHOLD_ALARMS.hasAlarms(factory, result.getId(), severity)) {
+    final String benchResultId) throws IOException {
+
+    if (THRESHOLD_ALARMS.hasAlarms(factory, benchResultId, severity)) {
       logger.println("An '" + severity + "' Alarm has been raised, Stopping the test!");
-      build.setResult(buildResult);
-      BENCH_RESULTS.stopTest(factory, result);
+      BENCH_RESULTS.stopTest(factory, benchResultId);
+      return buildResult;
     }
+
+    return SUCCESS;
   }
 
-  @Symbol("stoponalert")
+  @Symbol("stopOnAlert")
   @Extension
   public static class DescriptorImpl extends StopConditionDescriptor {
 

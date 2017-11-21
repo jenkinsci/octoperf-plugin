@@ -53,7 +53,7 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
     public FormValidation doTestLogin(
       @QueryParameter("username") final String username,
       @QueryParameter("password") final Secret password) throws MessagingException, IOException, ServletException {
-      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(OctoperfBuilder.DESCRIPTOR.getOctoperfURL(), System.out);
+      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL(), System.out);
       pair.getRight().onUsernameAndPassword(username, password.getPlainText());
       // Get projects to test authentication
       final RestApiFactory factory = pair.getLeft();

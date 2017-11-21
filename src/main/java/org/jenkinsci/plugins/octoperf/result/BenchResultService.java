@@ -44,7 +44,7 @@ public interface BenchResultService {
   /**
    * Stops the test.
    *
-   * @param result bench result
+   * @param benchResultId bench result id
    */
-  void stopTest(RestApiFactory apiFactory, BenchResult result) throws IOException;
+  void stopTest(RestApiFactory apiFactory, String benchResultId) throws IOException;
 }

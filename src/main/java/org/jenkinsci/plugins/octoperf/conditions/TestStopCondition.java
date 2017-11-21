@@ -2,16 +2,20 @@ package org.jenkinsci.plugins.octoperf.conditions;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
-import hudson.model.AbstractBuild;
 import hudson.model.Describable;
+import hudson.model.Result;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
-import org.jenkinsci.plugins.octoperf.result.BenchResult;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.Serializable;
 
-public abstract class TestStopCondition implements Describable<TestStopCondition>, ExtensionPoint {
+public abstract class TestStopCondition implements Describable<TestStopCondition>, ExtensionPoint, Serializable {
+
+  public TestStopCondition() {
+    super();
+  }
 
   @Override
   public StopConditionDescriptor getDescriptor() {
@@ -22,9 +26,8 @@ public abstract class TestStopCondition implements Describable<TestStopCondition
     return Jenkins.getInstance().getExtensionList(TestStopCondition.class);
   }
 
-  public abstract void execute(
+  public abstract Result execute(
     PrintStream logger,
-    AbstractBuild<?, ?> build,
     RestApiFactory factory,
-    BenchResult result) throws IOException;
+    String benchResultId) throws IOException;
 }

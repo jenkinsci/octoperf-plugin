@@ -1,10 +1,13 @@
 package org.jenkinsci.plugins.octoperf;
 
+import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
+import lombok.Getter;
+import lombok.Setter;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -29,16 +32,25 @@ import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 
+@Extension
+@Getter
+@Setter
 public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
+  private static OctoperfBuilderDescriptor DESCRIPTOR;
+
   private static final String ARROW = " => ";
-  private static final String DISPLAY_NAME = "OctoPerf";
 
   private String octoperfURL = DEFAULT_API_URL;
   private String name = "My OctoPerf Account";
 
-  OctoperfBuilderDescriptor() {
+  public OctoperfBuilderDescriptor() {
     super(OctoperfBuilder.class);
     load();
+    DESCRIPTOR = this;
+  }
+
+  static OctoperfBuilderDescriptor getDescriptor() {
+    return DESCRIPTOR;
   }
 
   @Override
@@ -48,7 +60,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
 
   @Override
   public String getDisplayName() {
-    return DISPLAY_NAME;
+    return "OctoPerf";
   }
 
   public ListBoxModel doFillCredentialsIdItems(final Object scope) {
@@ -122,18 +134,5 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   public List<StopConditionDescriptor> getStopConditionDescriptors() {
     return StopConditionDescriptor.all();
   }
-
-  public String getOctoperfURL() {
-    return octoperfURL;
-  }
-
-  public void setOctoperfURL(String octoperfURL) {
-    this.octoperfURL = octoperfURL;
-  }
-
-  public String getName() {
-    return name;
-  }
-
 }
 

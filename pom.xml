@@ -23,13 +23,18 @@
     <commons.io.version>2.6</commons.io.version>
     <credentials.version>2.1.16</credentials.version>
     <equals.verifier.version>2.4</equals.verifier.version>
+    <groovy.version>2.4.11</groovy.version>
     <guava.version>23.4-jre</guava.version>
     <jackson.version>2.9.2</jackson.version>
+    <jobdsl.version>1.66</jobdsl.version>
     <jodatime.version>2.9.9</jodatime.version>
     <junit.version>4.12</junit.version>
     <lombok.version>1.16.18</lombok.version>
     <mockito.version>1.10.19</mockito.version>
     <retrofit2.version>2.3.0</retrofit2.version>
+    <workflow.api.version>2.13</workflow.api.version>
+    <jenkins.version>2.73.3</jenkins.version>
+    <structs.version>1.10</structs.version>
   </properties>
 
   <profiles>
@@ -54,6 +59,27 @@
   </profiles>
 
   <dependencies>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>${groovy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>structs</artifactId>
+      <version>${structs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>job-dsl</artifactId>
+      <version>${jobdsl.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-step-api</artifactId>
+      <version>${workflow.api.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
