@@ -26,6 +26,7 @@
     <groovy.version>2.4.11</groovy.version>
     <guava.version>23.4-jre</guava.version>
     <jackson.version>2.9.2</jackson.version>
+    <jetty-util.version>9.4.7.v20170914</jetty-util.version>
     <jobdsl.version>1.66</jobdsl.version>
     <jodatime.version>2.9.9</jodatime.version>
     <junit.version>4.12</junit.version>
@@ -59,6 +60,11 @@
   </profiles>
 
   <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>${jetty-util.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>

@@ -4,6 +4,7 @@ import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.Result;
 import hudson.remoting.Callable;
+import hudson.util.Secret;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
@@ -46,7 +47,8 @@ public class OctoPerfBuild implements Callable<Result, Exception> {
   public static final long TEN_SECS = 10_000L;
 
   PrintStream logger;
-  OctoperfCredential credentials;
+  String username;
+  Secret password;
   String scenarioId;
   List<? extends TestStopCondition> stopConditions;
   FilePath workspace;
@@ -55,7 +57,8 @@ public class OctoPerfBuild implements Callable<Result, Exception> {
 
   OctoPerfBuild(
     final PrintStream logger,
-    final OctoperfCredential credentials,
+    final String username,
+    final Secret password,
     final String scenarioId,
     final List<? extends TestStopCondition> stopConditions,
     final FilePath workspace,
@@ -63,7 +66,8 @@ public class OctoPerfBuild implements Callable<Result, Exception> {
     final EnvVars envVars) {
     super();
     this.logger = requireNonNull(logger);
-    this.credentials = requireNonNull(credentials);
+    this.username = requireNonNull(username);
+    this.password = requireNonNull(password);
     this.scenarioId = requireNonNull(scenarioId);
     this.stopConditions = requireNonNull(stopConditions);
     this.workspace = requireNonNull(workspace);
@@ -75,12 +79,12 @@ public class OctoPerfBuild implements Callable<Result, Exception> {
   public Result call() throws Exception {
     Result result = Result.SUCCESS;
 
-    logger.println("Username: " + credentials.getUsername());
+    logger.println("Username: " + username);
 
     logger.println("API Endpoint: " + serverUrl);
 
     final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(serverUrl, logger);
-    pair.getRight().onUsernameAndPassword(credentials.getUsername(), credentials.getPassword().getPlainText());
+    pair.getRight().onUsernameAndPassword(username, password.getPlainText());
     final RestApiFactory apiFactory = pair.getLeft();
 
     final Scenario scenario = SCENARIOS.find(apiFactory, scenarioId);

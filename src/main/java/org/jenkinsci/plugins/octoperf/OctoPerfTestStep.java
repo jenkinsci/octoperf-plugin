@@ -7,7 +7,8 @@ import hudson.Launcher;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
@@ -36,7 +37,8 @@ import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
 
-@Data
+@Getter
+@Setter
 public class OctoPerfTestStep extends Step {
   private String credentialsId = "";
   private String scenarioId = "";
@@ -79,6 +81,7 @@ public class OctoPerfTestStep extends Step {
   }
 
   public static class OctoPerfTestExecution extends SynchronousNonBlockingStepExecution<Void> {
+
 
     private final String credentialsId;
     private final String scenarioId;

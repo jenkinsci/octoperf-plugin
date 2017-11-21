@@ -83,7 +83,8 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
 
     final Callable<Result, Exception> build = new OctoPerfBuild(
       listener.getLogger(),
-      credentials.orElse(null),
+      credentials.map(OctoperfCredential::getUsername).orElse(""),
+      credentials.map(OctoperfCredential::getPassword).orElse(null),
       scenarioId,
       ImmutableList.copyOf(stopConditions),
       workspace,
