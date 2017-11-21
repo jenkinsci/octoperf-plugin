@@ -6,6 +6,7 @@ import hudson.model.Item;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.json.JSONObject;
@@ -36,8 +37,6 @@ import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 @Getter
 @Setter
 public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
-  private static OctoperfBuilderDescriptor DESCRIPTOR;
-
   private static final String ARROW = " => ";
 
   private String octoperfURL = DEFAULT_API_URL;
@@ -46,11 +45,10 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   public OctoperfBuilderDescriptor() {
     super(OctoperfBuilder.class);
     load();
-    DESCRIPTOR = this;
   }
 
   static OctoperfBuilderDescriptor getDescriptor() {
-    return DESCRIPTOR;
+    return (OctoperfBuilderDescriptor) Jenkins.getInstance().getDescriptor(OctoperfBuilder.class);
   }
 
   @Override

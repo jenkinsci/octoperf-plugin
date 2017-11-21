@@ -40,8 +40,6 @@ import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RES
 @Getter
 @Setter
 public class OctoPerfTestStep extends Step {
-  private static final long serialVersionUID = -3802154812289490186L;
-
   private String credentialsId = "";
   private String scenarioId = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
@@ -83,16 +81,14 @@ public class OctoPerfTestStep extends Step {
   }
 
   public static class OctoPerfTestExecution extends SynchronousNonBlockingStepExecution<Void> {
-
+    private static final long serialVersionUID = -3802154812289490186L;
 
     private final String credentialsId;
     private final String scenarioId;
     private final String serverUrl;
     private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
 
-    private transient StepContext context;
-
-    private EnvVars variables = null;
+    private EnvVars variables = new EnvVars();
 
     protected OctoPerfTestExecution(
       @Nonnull final StepContext context,
@@ -101,7 +97,6 @@ public class OctoPerfTestStep extends Step {
       @Nonnull final String serverUrl,
       @Nonnull final List<? extends TestStopCondition> stopConditions) {
       super(context);
-      this.context = context;
       this.credentialsId = requireNonNull(credentialsId);
       this.scenarioId = requireNonNull(scenarioId);
       this.serverUrl = requireNonNull(serverUrl);
@@ -117,27 +112,29 @@ public class OctoPerfTestStep extends Step {
       builder.setServerUrl(serverUrl);
       builder.setStopConditions(stopConditions);
 
-      final Run run = this.context.get(Run.class);
-      final FilePath workspace = this.context.get(FilePath.class);
-      final TaskListener listener = this.context.get(TaskListener.class);
-      this.variables = this.context.get(EnvVars.class);
+      final Run run = getContext().get(Run.class);
+      final FilePath workspace = getContext().get(FilePath.class);
+      final TaskListener listener = getContext().get(TaskListener.class);
+      this.variables = getContext().get(EnvVars.class);
       builder.perform(run, workspace, listener, variables);
       return null;
     }
 
     @Override
     public void stop(final Throwable cause) throws Exception {
-      context.onFailure(cause);
+      getContext().onFailure(cause);
 
       final OctoperfCredential credentials = CREDENTIALS_SERVICE.find(credentialsId).orElse(null);
-      final TaskListener listener = this.context.get(TaskListener.class);
+      final TaskListener listener = getContext().get(TaskListener.class);
 
       final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(serverUrl, listener.getLogger());
       pair.getRight().onUsernameAndPassword(credentials.getUsername(), credentials.getPassword().getPlainText());
       final RestApiFactory apiFactory = pair.getLeft();
 
       final String benchResultId = variables.getOrDefault("BENCH_RESULT_ID", "");
-      if (!benchResultId.isEmpty()) {
+      if (benchResultId.isEmpty()) {
+        listener.error("Could not stop test: benchResultId is empty");
+      } else {
         BENCH_RESULTS.stopTest(apiFactory, benchResultId);
       }
     }
