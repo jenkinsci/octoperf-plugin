@@ -31,7 +31,6 @@ final class RetrofitScenarioService implements ScenarioService {
   
   @Override
   public List<Triple<Workspace, Project, Scenario>> getScenariosByProject(final RestApiFactory apiFactory) throws IOException{
-
     final ImmutableList.Builder<Triple<Workspace, Project, Scenario>> builder = ImmutableList.builder();
     final List<Workspace> workspaces = WorkspaceService.WORKSPACES.getWorkspaces(apiFactory);
     for (final Workspace workspace : workspaces) {

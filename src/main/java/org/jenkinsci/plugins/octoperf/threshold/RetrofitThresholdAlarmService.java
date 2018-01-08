@@ -1,18 +1,17 @@
 package org.jenkinsci.plugins.octoperf.threshold;
 
 
-import okhttp3.RequestBody;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 
 import java.io.IOException;
 
+import static java.lang.String.format;
 import static okhttp3.MediaType.parse;
 import static okhttp3.RequestBody.create;
 
 final class RetrofitThresholdAlarmService implements ThresholdAlarmService {
   private static final String THRESHOLD_REPORT_ITEM =
-    "{\"@type\":\"ThresholdAlarmReportItem\",\"metric\":{\"@type\":\"MonitoringMetric\",\"filters\":[],\"id\":\"\",\"type\":\"NUMBER_COUNTER\"},\"name\":\"\"}";
-  private static final RequestBody JSON = create(parse("application/json"), THRESHOLD_REPORT_ITEM);
+    "{\"@type\":\"ThresholdAlarmReportItem\",\"metric\":{\"@type\":\"MonitoringMetric\",\"benchResultId\":\"%s\", \"filters\":[],\"id\":\"\",\"type\":\"NUMBER_COUNTER\"},\"name\":\"\"}";
 
   public boolean hasAlarms(
     final RestApiFactory apiFactory,
@@ -21,7 +20,7 @@ final class RetrofitThresholdAlarmService implements ThresholdAlarmService {
     final ThresholdAlarmApi api = apiFactory.create(ThresholdAlarmApi.class);
 
     return api
-      .getAlarms(benchResultId, JSON)
+      .getAlarms(create(parse("application/json"), format(THRESHOLD_REPORT_ITEM, benchResultId)))
       .execute()
       .body()
       .stream()

@@ -1,12 +1,14 @@
 package org.jenkinsci.plugins.octoperf.report;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Value;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A bench report is attached to a given bench result, 
@@ -20,20 +22,24 @@ import lombok.Value;
 public class BenchReport {
   String id;
   String projectId;
-  String benchResultId;
+  List<String> benchResultIds;
   String name;
   
   @JsonCreator
   BenchReport(
       @JsonProperty("id") final String id,
       @JsonProperty("projectId") final String projectId,
-      @JsonProperty("benchResultId") final String benchResultId,
+      @JsonProperty("benchResultIds") final List<String> benchResultIds,
       @JsonProperty("name") final String name) {
     super();
     this.id = checkNotNull(id);
     this.projectId = checkNotNull(projectId);
-    this.benchResultId = checkNotNull(benchResultId);
+    this.benchResultIds = checkNotNull(benchResultIds);
     this.name = checkNotNull(name);
   }
-    
+
+  @JsonIgnore
+  public String getBenchResultId() {
+    return benchResultIds.get(0);
+  }
 }
