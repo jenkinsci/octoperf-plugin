@@ -1,14 +1,12 @@
 package org.jenkinsci.plugins.octoperf.report;
 
-import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
-import static org.junit.Assert.assertNotNull;
-
-import org.jenkinsci.plugins.octoperf.report.BenchReport;
+import com.google.common.collect.ImmutableList;
+import com.google.common.testing.NullPointerTester;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-import com.google.common.testing.NullPointerTester;
-
-import nl.jqno.equalsverifier.EqualsVerifier;
+import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests {@link BenchReport}.
@@ -35,7 +33,7 @@ public class BenchReportTest {
   }
   
   public static BenchReport newInstance() {
-    return new BenchReport("id", "projectId", "benchResultId", "name");
+    return new BenchReport("id", "projectId", ImmutableList.of("benchResultId"), "name");
   }
   
 }
