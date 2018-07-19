@@ -35,6 +35,11 @@ public enum BenchResultState {
   SCALING,
 
   /**
+   * Containers are being launched on the agents
+   */
+  PREPARING,
+
+  /**
    * Tasks on the cluster are currently initializing the load generators.
    */
   INITIALIZING,
