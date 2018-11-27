@@ -46,7 +46,7 @@ public class JUnitReportServiceTest {
   public void before() throws IOException {
     when(retrofit.create(JUnitReportApi.class)).thenReturn(api);
     when(bufferedSource.inputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
-    ResponseBody responseBody = new RealResponseBody(new Headers.Builder().add("Content-Type", "application/octet-stream").build(), bufferedSource);
+    final ResponseBody responseBody = new RealResponseBody("application/octet-stream", 0, bufferedSource);
     when(call.execute()).thenReturn(Response.success(responseBody));
     when(api.getReport(BENCH_RESULT_ID)).thenReturn(call);
   }

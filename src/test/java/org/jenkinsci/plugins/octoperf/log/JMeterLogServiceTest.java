@@ -50,7 +50,7 @@ public class JMeterLogServiceTest {
   private void apiGetFile(final String filename) {
     final BufferedSource bufferedSource = mock(BufferedSource.class);
     when(bufferedSource.inputStream()).thenReturn(getClass().getResourceAsStream("/"+filename+".jtl"));
-    ResponseBody responseBody = new RealResponseBody(new Headers.Builder().add("Content-Type", "application/octet-stream").build(), bufferedSource);
+    final ResponseBody responseBody = new RealResponseBody("application/octet-stream", 0L, bufferedSource);
     when(api.getFile(BENCH_RESULT_ID, filename + ".jtl")).thenReturn(Calls.response(responseBody));
   }
 

@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.octoperf.client;
 
+import jenkins.model.Jenkins;
 import org.apache.commons.lang3.tuple.Pair;
 import retrofit2.Retrofit;
 
@@ -16,7 +17,7 @@ public interface RestClientService {
   /**
    * Singleton {@link RestClientService} instance.
    */
-  RestClientService CLIENTS = new RetrofitClientService();
+  RestClientService CLIENTS = new RetrofitClientService(Jenkins.getInstance());
 
   /**
    * Creates a {@link Retrofit} ready to login on octoperf cloud load testing platform.
