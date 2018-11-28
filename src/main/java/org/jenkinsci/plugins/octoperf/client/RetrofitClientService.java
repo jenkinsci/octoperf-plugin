@@ -72,8 +72,7 @@ final class RetrofitClientService implements RestClientService {
     final ProxyConfiguration cfg,
     final OkHttpClient.Builder builder) {
 
-    builder
-      .proxy(new Proxy(HTTP, new InetSocketAddress(cfg.name, cfg.port)));
+    builder.proxy(new Proxy(HTTP, new InetSocketAddress(cfg.name, cfg.port)));
     final String username = nullToEmpty(cfg.getUserName());
     final String password = nullToEmpty(cfg.getPassword());
 

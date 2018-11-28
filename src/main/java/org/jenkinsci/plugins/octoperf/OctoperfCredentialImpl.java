@@ -51,7 +51,7 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
     // Used by global.jelly to authenticate User key
     public FormValidation doTestLogin(
       @QueryParameter("username") final String username,
-      @QueryParameter("password") final Secret password) throws MessagingException, IOException, ServletException {
+      @QueryParameter("password") final Secret password) throws IOException {
       final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL(), System.out);
       pair.getRight().onUsernameAndPassword(username, password.getPlainText());
       // Get projects to test authentication
@@ -61,7 +61,7 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
       if(response.isSuccessful()) {
         return FormValidation.ok("Successfully logged in!");
       }
-      return FormValidation.error(new IOException(response.message()), "Login failed!");
+      return FormValidation.error(new IOException(response.toString()), "Login failed!");
     }
   }
 }
