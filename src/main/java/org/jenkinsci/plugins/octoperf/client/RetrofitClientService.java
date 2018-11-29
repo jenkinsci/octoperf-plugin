@@ -41,34 +41,40 @@ final class RetrofitClientService implements RestClientService {
     final Retrofit unauthenticatedClient = new Retrofit
       .Builder()
       .addConverterFactory(JacksonConverterFactory.create(mapper))
-      .client(new OkHttpClient.Builder().build())
+      .client(newClient().build())
       .baseUrl(apiUrl)
       .build();
 
     final RestClientAuthenticator authenticator = new BearerClientAuthentication(unauthenticatedClient.create(AccountApi.class), logger);
 
-    final OkHttpClient.Builder builder = new OkHttpClient.Builder()
-      .readTimeout(1, MINUTES)
-      .writeTimeout(1, MINUTES)
-      .hostnameVerifier(new NoopHostnameVerifier())
+    final OkHttpClient.Builder httpClient = newClient()
       .authenticator(authenticator)
       .addNetworkInterceptor(authenticator);
 
-    proxy.ifPresent(cfg -> setProxy(cfg, builder));
-
-    final Retrofit client = new Retrofit
+    final Retrofit retrofit = new Retrofit
       .Builder()
       .addConverterFactory(JacksonConverterFactory.create(mapper))
-      .client(builder.build())
+      .client(httpClient.build())
       .baseUrl(apiUrl)
       .build();
 
-    final RestApiFactory wrapper = new RetrofitWrapper(client);
+    final RestApiFactory wrapper = new RetrofitWrapper(retrofit);
 
     return ImmutablePair.of(wrapper, authenticator);
   }
 
-  private void setProxy(
+  private OkHttpClient.Builder newClient() {
+    final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+      .readTimeout(1, MINUTES)
+      .writeTimeout(1, MINUTES)
+      .hostnameVerifier(new NoopHostnameVerifier());
+
+    proxy.ifPresent(cfg -> setProxy(cfg, builder));
+
+    return builder;
+  }
+
+  private static void setProxy(
     final ProxyConfiguration cfg,
     final OkHttpClient.Builder builder) {
 
