@@ -17,7 +17,7 @@ public interface RestClientService {
   /**
    * Singleton {@link RestClientService} instance.
    */
-  RestClientService CLIENTS = new RetrofitClientService(Jenkins.get());
+  RestClientService CLIENTS = new RetrofitClientService(Jenkins.getInstanceOrNull());
 
   /**
    * Creates a {@link Retrofit} ready to login on octoperf cloud load testing platform.
