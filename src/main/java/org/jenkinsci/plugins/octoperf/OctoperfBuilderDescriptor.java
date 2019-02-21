@@ -48,7 +48,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   }
 
   static OctoperfBuilderDescriptor getDescriptor() {
-    return (OctoperfBuilderDescriptor) Jenkins.getInstance().getDescriptor(OctoperfBuilder.class);
+    return (OctoperfBuilderDescriptor) Jenkins.getInstanceOrNull().getDescriptor(OctoperfBuilder.class);
   }
 
   @Override

@@ -18,7 +18,7 @@ public abstract class TestStopCondition extends AbstractDescribableImpl<TestStop
   }
 
   public static ExtensionList<TestStopCondition> all() {
-    return Jenkins.getInstance().getExtensionList(TestStopCondition.class);
+    return Jenkins.getInstanceOrNull().getExtensionList(TestStopCondition.class);
   }
 
   public abstract Result execute(

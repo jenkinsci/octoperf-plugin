@@ -11,7 +11,7 @@ public abstract class StopConditionDescriptor extends Descriptor<TestStopConditi
   }
 
   public static DescriptorExtensionList<TestStopCondition, StopConditionDescriptor> all() {
-    return Jenkins.getInstance().getDescriptorList(TestStopCondition.class);
+    return Jenkins.getInstanceOrNull().getDescriptorList(TestStopCondition.class);
   }
 
   public static StopConditionDescriptor getById(String id) {
