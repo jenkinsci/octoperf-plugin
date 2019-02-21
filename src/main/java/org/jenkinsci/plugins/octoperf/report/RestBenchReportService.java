@@ -7,22 +7,21 @@ import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL
 
 final class RestBenchReportService implements BenchReportService {
 
+  private static final String DEFAULT_API_URL = "https://api.octoperf.com";
   private static final String SAAS_APP = "https://app.octoperf.com";
-  private static final String REPORT_URL = "/#/app/workspace/%s/project/%s/analysis/%s/%s/%s";
+  private static final String REPORT_URL = "/#/app/workspace/%s/project/%s/analysis/%s";
 
   @Override
   public String getReportUrl(
-    final String apiUrl,
+    final String serverUrl,
     final String workspaceId,
-    final String resultProjectId,
     final BenchReport report) {
-    String baseUrl = Objects.equals(apiUrl, DEFAULT_API_URL) ? SAAS_APP : removeEnd(apiUrl, "/") + "/app";
+    final String baseUrl = Objects.equals(serverUrl, DEFAULT_API_URL) ? SAAS_APP : (removeEnd(serverUrl, "/") + "/app");
     return String.format(
       baseUrl + REPORT_URL,
       workspaceId,
       report.getProjectId(),
-      resultProjectId,
-      report.getBenchResultId(),
-      report.getId());
+      report.getId()
+    );
   }
 }

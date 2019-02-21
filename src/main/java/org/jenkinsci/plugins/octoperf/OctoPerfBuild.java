@@ -106,8 +106,8 @@ public class OctoPerfBuild implements Callable<Result> {
       logger.println("Bench Report: " + BENCH_REPORTS.getReportUrl(
         serverUrl,
         project.getWorkspaceId(),
-        benchResult.getResultProjectId(),
-        report));
+        report)
+      );
     } catch(final IOException e) {
       logger.println("Could not start test: " + e);
       return FAILURE;

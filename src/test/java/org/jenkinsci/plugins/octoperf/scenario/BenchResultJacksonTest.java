@@ -1,19 +1,12 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
-import static org.junit.Assert.assertEquals;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-/**
- * Tests {@link scenario}.
- * 
- * @author jerome
- *
- */
 public class BenchResultJacksonTest {
   
   private final ObjectMapper mapper = new ObjectMapper();

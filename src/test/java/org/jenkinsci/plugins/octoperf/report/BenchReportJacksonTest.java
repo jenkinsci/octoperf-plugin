@@ -1,13 +1,11 @@
 package org.jenkinsci.plugins.octoperf.report;
 
-import static org.junit.Assert.assertEquals;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
 
 import java.io.IOException;
 
-import org.jenkinsci.plugins.octoperf.report.BenchReport;
-import org.junit.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests {@link BenchReport}.

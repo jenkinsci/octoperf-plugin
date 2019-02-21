@@ -2,18 +2,11 @@ package org.jenkinsci.plugins.octoperf.workspace;
 
 import com.google.common.testing.NullPointerTester;
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.junit.Test;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * Tests {@link Scenario}.
- * 
- * @author jerome
- *
- */
 public class WorkspaceTest {
 
   @Test

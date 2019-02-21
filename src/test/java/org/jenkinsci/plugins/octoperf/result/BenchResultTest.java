@@ -7,9 +7,7 @@ import org.junit.Test;
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ABORTED;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultState.FINISHED;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 /**
  * Tests {@link BenchResult}.

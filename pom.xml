@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.28</version>
+    <version>3.37</version>
     <relativePath />
   </parent>
   <groupId>org.jenkinsci.plugins</groupId>
@@ -22,22 +22,22 @@
     <commons.compress.version>1.18</commons.compress.version>
     <commons.lang3.version>3.8.1</commons.lang3.version>
     <commons.io.version>2.6</commons.io.version>
-    <credentials.version>2.1.16</credentials.version>
-    <equals.verifier.version>3.0.3</equals.verifier.version>
-    <groovy.version>2.4.11</groovy.version>
-    <guava.version>27.0-jre</guava.version>
-    <jackson.version>2.9.7</jackson.version>
-    <jetty-util.version>9.4.14.v20181114</jetty-util.version>
+    <credentials.version>2.1.18</credentials.version>
+    <equals.verifier.version>3.1.5</equals.verifier.version>
+    <groovy.version>2.4.12</groovy.version>
+    <guava.version>27.0.1-jre</guava.version>
+    <jackson.version>2.9.8</jackson.version>
+    <jetty-util.version>9.4.15.v20190215</jetty-util.version>
     <jobdsl.version>1.66</jobdsl.version>
     <jodatime.version>2.10.1</jodatime.version>
     <junit.version>4.12</junit.version>
-    <lombok.version>1.16.18</lombok.version>
-    <mockito.version>1.10.19</mockito.version>
-    <okhttp.version>3.12.0</okhttp.version>
+    <lombok.version>1.18.6</lombok.version>
+    <mockito.version>2.24.5</mockito.version>
+    <okhttp.version>3.13.1</okhttp.version>
     <retrofit2.version>2.5.0</retrofit2.version>
-    <workflow.api.version>2.13</workflow.api.version>
-    <jenkins.version>2.73.3</jenkins.version>
-    <structs.version>1.10</structs.version>
+    <workflow.api.version>2.19</workflow.api.version>
+    <jenkins.version>2.150.3</jenkins.version>
+    <structs.version>1.17</structs.version>
   </properties>
 
   <profiles>
@@ -157,7 +157,7 @@
 
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>

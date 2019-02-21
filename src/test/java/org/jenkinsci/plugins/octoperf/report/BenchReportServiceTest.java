@@ -4,7 +4,7 @@ import com.google.common.testing.NullPointerTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
@@ -27,13 +27,13 @@ public class BenchReportServiceTest {
   
   @Test
   public void shouldGetBenchReportsSaas() {
-    final String reportUrl = BENCH_REPORTS.getReportUrl(DEFAULT_API_URL, "workspaceId", "resultProjectId", REPORT);
-    assertEquals("https://app.octoperf.com/#/app/workspace/workspaceId/project/projectId/analysis/resultProjectId/benchResultId/id", reportUrl);
+    final String reportUrl = BENCH_REPORTS.getReportUrl(DEFAULT_API_URL, "workspaceId", REPORT);
+    assertEquals("https://app.octoperf.com/#/app/workspace/workspaceId/project/projectId/analysis/id", reportUrl);
   }
 
   @Test
   public void shouldGetBenchReportsEnterprise() {
-    final String reportUrl = BENCH_REPORTS.getReportUrl("http://localhost:8090", "workspaceId", "resultProjectId", REPORT);
-    assertEquals("http://localhost:8090/app/#/app/workspace/workspaceId/project/projectId/analysis/resultProjectId/benchResultId/id", reportUrl);
+    final String reportUrl = BENCH_REPORTS.getReportUrl("http://localhost:8090", "workspaceId", REPORT);
+    assertEquals("http://localhost:8090/app/#/app/workspace/workspaceId/project/projectId/analysis/id", reportUrl);
   }
 }

@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import retrofit2.mock.Calls;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +48,7 @@ public class ScenarioServiceTest {
   WorkspacesApi workspacesApi;
 
   @Before
-  public void before() throws IOException {
+  public void before() {
     when(retrofit.create(ScenarioApi.class)).thenReturn(api);
     when(retrofit.create(ProjectApi.class)).thenReturn(projectApi);
     when(retrofit.create(WorkspacesApi.class)).thenReturn(workspacesApi);

@@ -1,13 +1,11 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
-import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
-import static org.junit.Assert.assertNotNull;
-
+import com.google.common.testing.NullPointerTester;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-import com.google.common.testing.NullPointerTester;
-
-import nl.jqno.equalsverifier.EqualsVerifier;
+import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests {@link Scenario}.

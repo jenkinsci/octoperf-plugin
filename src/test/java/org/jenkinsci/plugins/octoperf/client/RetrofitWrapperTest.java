@@ -1,6 +1,5 @@
 package org.jenkinsci.plugins.octoperf.client;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import retrofit2.Retrofit;

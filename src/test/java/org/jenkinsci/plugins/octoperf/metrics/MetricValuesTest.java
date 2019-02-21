@@ -1,14 +1,12 @@
 package org.jenkinsci.plugins.octoperf.metrics;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.testing.NullPointerTester;
 import com.google.common.testing.NullPointerTester.Visibility;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests {@link MetricValue}.
