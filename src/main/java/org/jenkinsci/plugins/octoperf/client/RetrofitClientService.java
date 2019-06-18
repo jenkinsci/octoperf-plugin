@@ -12,9 +12,14 @@ import org.jenkinsci.plugins.octoperf.account.AccountApi;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.nullToEmpty;
@@ -64,14 +69,24 @@ final class RetrofitClientService implements RestClientService {
   }
 
   private OkHttpClient.Builder newClient() {
-    final OkHttpClient.Builder builder = new OkHttpClient.Builder()
-      .readTimeout(1, MINUTES)
-      .writeTimeout(1, MINUTES)
-      .hostnameVerifier(new NoopHostnameVerifier());
+    try {
+      final X509TrustManager trustManager = new TrustingX509TrustManager();
+      final SSLContext sslContext = SSLContext.getInstance("SSL");
+      sslContext.init(null, new TrustManager[] {trustManager}, new java.security.SecureRandom());
 
-    proxy.ifPresent(cfg -> setProxy(cfg, builder));
+      final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-    return builder;
+      final OkHttpClient.Builder builder = new OkHttpClient.Builder()
+        .readTimeout(1, MINUTES)
+        .writeTimeout(1, MINUTES)
+        .sslSocketFactory(sslSocketFactory, trustManager);
+
+      proxy.ifPresent(cfg -> setProxy(cfg, builder));
+
+      return builder;
+    } catch (final GeneralSecurityException e) {
+      throw new RuntimeException("Could not initialize SSL Context", e);
+    }
   }
 
   private static void setProxy(
