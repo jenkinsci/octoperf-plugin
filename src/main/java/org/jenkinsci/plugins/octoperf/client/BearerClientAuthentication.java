@@ -57,9 +57,13 @@ final class BearerClientAuthentication implements RestClientAuthenticator {
     if(optional.isPresent()) {
       token = optional;
 
-      return response.request().newBuilder()
-        .header(AUTHORIZATION, BEARER + token.get().getToken())
-        .build();
+      if (response.request().headers(AUTHORIZATION).isEmpty()) {
+        return response
+          .request()
+          .newBuilder()
+          .header(AUTHORIZATION, BEARER + token.get().getToken())
+          .build();
+      }
     }
     return null;
   }
@@ -81,7 +85,7 @@ final class BearerClientAuthentication implements RestClientAuthenticator {
     Request request = chain.request();
     if (token.isPresent()) {
       final String tokenStr = token.get().getToken();
-      request = request.newBuilder().addHeader(AUTHORIZATION, BEARER + tokenStr).build();
+      request = request.newBuilder().header(AUTHORIZATION, BEARER + tokenStr).build();
     }
     return chain.proceed(request);
   }
