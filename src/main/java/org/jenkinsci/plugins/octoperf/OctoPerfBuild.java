@@ -100,6 +100,8 @@ public class OctoPerfBuild implements Callable<Result> {
       report = SCENARIOS.startTest(apiFactory, scenarioId);
       benchResult = BENCH_RESULTS.find(apiFactory, report.getBenchResultId());
 
+      envVars.put("OCTOPERF_PROJECT_ID", benchResult.getDesignProjectId());
+
       logger.println("Starting test...");
 
       final Project project = ProjectService.PROJECTS.find(apiFactory, scenario.getProjectId());
