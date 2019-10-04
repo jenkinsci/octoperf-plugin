@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.octoperf;
 
+import com.google.common.io.Closer;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.Result;
@@ -20,10 +21,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
+import static com.google.common.base.Charsets.UTF_8;
 import static hudson.model.Result.FAILURE;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
@@ -43,7 +48,8 @@ import static org.joda.time.format.DateTimeFormat.forPattern;
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 public class OctoPerfBuild implements Callable<Result> {
   private static final DateTimeFormatter DATE_FORMAT = forPattern("HH:mm:ss");
-  public static final long TEN_SECS = 10_000L;
+  private static final long TEN_SECS = 10_000L;
+  private static final String BENCH_RESULT_ID = "BENCH_RESULT_ID";
 
   PrintStream logger;
   String username;
@@ -95,12 +101,14 @@ public class OctoPerfBuild implements Callable<Result> {
 
     final BenchResult benchResult;
 
+    final Properties properties = new Properties();
+
     BenchReport report;
     try {
       report = SCENARIOS.startTest(apiFactory, scenarioId);
       benchResult = BENCH_RESULTS.find(apiFactory, report.getBenchResultId());
 
-      envVars.put("OCTOPERF_PROJECT_ID", benchResult.getDesignProjectId());
+      properties.put("PROJECT_ID", benchResult.getDesignProjectId());
 
       logger.println("Starting test...");
 
@@ -115,7 +123,9 @@ public class OctoPerfBuild implements Callable<Result> {
       return FAILURE;
     }
 
-    envVars.put("BENCH_RESULT_ID", benchResult.getId());
+    final String benchResultId = benchResult.getId();
+    envVars.put(BENCH_RESULT_ID, benchResultId);
+    properties.put(BENCH_RESULT_ID, benchResultId);
 
     logger.println("Launching test..");
     BenchResultState currentState;
@@ -124,11 +134,11 @@ public class OctoPerfBuild implements Callable<Result> {
     while(true) {
       Thread.sleep(TEN_SECS);
 
-      currentState = BENCH_RESULTS.getState(apiFactory, benchResult.getId());
+      currentState = BENCH_RESULTS.getState(apiFactory, benchResultId);
 
       if(currentState.isRunning()) {
         for (final TestStopCondition condition : stopConditions) {
-          result = condition.execute(logger, apiFactory, benchResult.getId());
+          result = condition.execute(logger, apiFactory, benchResultId);
         }
 
         final DateTime now = DateTime.now();
@@ -136,11 +146,11 @@ public class OctoPerfBuild implements Callable<Result> {
           startTime = of(now);
         }
 
-        final MetricValues metrics = METRICS.getMetrics(apiFactory, benchResult.getId());
+        final MetricValues metrics = METRICS.getMetrics(apiFactory, benchResultId);
         final String printable = METRICS.toPrintable(startTime.get(), metrics);
         final String nowStr = DATE_FORMAT.print(now);
 
-        final String progress = String.format("[%.2f%%] ", BENCH_RESULTS.getProgress(apiFactory, benchResult.getId()));
+        final String progress = String.format("[%.2f%%] ", BENCH_RESULTS.getProgress(apiFactory, benchResultId));
         logger.println(progress + nowStr + " - " + printable);
       } else if(currentState.isTerminalState()) {
         logger.println("Test finished with state: " + currentState);
@@ -152,12 +162,14 @@ public class OctoPerfBuild implements Callable<Result> {
 
     envVars.remove("BENCH_RESULT_ID");
 
+    writeProperties(properties);
+
     logger.println("Saving JUnit report...");
-    final FilePath junitReport = JUNIT_REPORTS.saveJUnitReport(workspace, apiFactory, benchResult.getId());
+    final FilePath junitReport = JUNIT_REPORTS.saveJUnitReport(workspace, apiFactory, benchResultId);
     logger.println("JUnit report saved to: " + junitReport);
 
     logger.println("Downloading JMeter Logs and JTLs...");
-    LOGS.downloadLogFiles(workspace, logger, apiFactory, benchResult.getId());
+    LOGS.downloadLogFiles(workspace, logger, apiFactory, benchResultId);
 
     logger.println("Merging JTLs into a single file...");
     LOGS.mergeJTLs(workspace, logger);
@@ -169,5 +181,17 @@ public class OctoPerfBuild implements Callable<Result> {
     }
 
     return result;
+  }
+
+  private void writeProperties(final Properties properties) throws IOException, InterruptedException {
+    final FilePath path = new FilePath(workspace, "octoperf.properties");
+    path.deleteContents();
+    Closer closer = Closer.create();
+    try {
+      final OutputStream output = closer.register(path.write());
+      properties.store(new OutputStreamWriter(output, UTF_8), "");
+    } finally {
+      closer.close();
+    }
   }
 }
