@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.43</version>
+    <version>3.51</version>
     <relativePath />
   </parent>
   <groupId>org.jenkinsci.plugins</groupId>
@@ -19,26 +19,22 @@
 
   <properties>
     <java.level>8</java.level>
-    <commons.compress.version>1.18</commons.compress.version>
+    <commons.compress.version>1.19</commons.compress.version>
     <commons.lang3.version>3.9</commons.lang3.version>
     <commons.io.version>2.6</commons.io.version>
-    <credentials.version>2.2.0</credentials.version>
-    <equals.verifier.version>3.1.9</equals.verifier.version>
-    <groovy.version>2.4.12</groovy.version>
-    <guava.version>27.0.1-jre</guava.version>
-    <jackson.version>2.9.9.2</jackson.version>
-    <jackson-joda.version>2.9.9</jackson-joda.version>
-    <jetty-util.version>9.4.19.v20190610</jetty-util.version>
-    <jobdsl.version>1.74</jobdsl.version>
-    <jodatime.version>2.10.2</jodatime.version>
-    <junit.version>4.12</junit.version>
-    <lombok.version>1.18.8</lombok.version>
-    <mockito.version>2.28.2</mockito.version>
-    <okhttp.version>3.14.2</okhttp.version>
-    <retrofit2.version>2.6.0</retrofit2.version>
+    <credentials.version>2.2.1</credentials.version>
+    <equals.verifier.version>3.1.10</equals.verifier.version>
+    <guava.version>28.0-jre</guava.version>
+    <jackson.version>2.10.0</jackson.version>
+    <jetty-util.version>9.4.22.v20191022</jetty-util.version>
+    <jobdsl.version>1.76</jobdsl.version>
+    <jodatime.version>2.10.5</jodatime.version>
+    <lombok.version>1.18.10</lombok.version>
+    <mockito.version>3.1.0</mockito.version>
+    <okhttp.version>3.14.4</okhttp.version>
+    <retrofit2.version>2.6.2</retrofit2.version>
     <workflow.api.version>2.20</workflow.api.version>
-    <jenkins.version>2.176.1</jenkins.version>
-    <structs.version>1.19</structs.version>
+    <structs.version>1.20</structs.version>
   </properties>
 
   <profiles>
@@ -57,7 +53,7 @@
         <javadoc.flag>none</javadoc.flag>
       </properties>
       <activation>
-        <jdk>1.8</jdk>
+        <jdk>[1.8,)</jdk>
       </activation>
     </profile>
   </profiles>
@@ -72,11 +68,6 @@
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
       <version>${jetty-util.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>${groovy.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
@@ -127,7 +118,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-joda</artifactId>
-      <version>${jackson-joda.version}</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
@@ -160,12 +151,6 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
