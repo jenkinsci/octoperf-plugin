@@ -1,11 +1,13 @@
 package org.jenkinsci.plugins.octoperf;
 
 import com.google.common.io.Closer;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.model.Result;
 import hudson.util.Secret;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
@@ -183,6 +185,7 @@ public class OctoPerfBuild implements Callable<Result> {
     return result;
   }
 
+  @SuppressFBWarnings({"OS_OPEN_STREAM"})
   private void writeProperties(final Properties properties) throws IOException, InterruptedException {
     final FilePath path = new FilePath(workspace, "octoperf.properties");
     path.deleteContents();
