@@ -28,7 +28,7 @@ public class BenchReportServiceTest {
   @Test
   public void shouldGetBenchReportsSaas() {
     final String reportUrl = BENCH_REPORTS.getReportUrl(DEFAULT_API_URL, "workspaceId", REPORT);
-    assertEquals("https://app.octoperf.com/#/app/workspace/workspaceId/project/projectId/analysis/id", reportUrl);
+    assertEquals("https://api.octoperf.com/app/#/app/workspace/workspaceId/project/projectId/analysis/id", reportUrl);
   }
 
   @Test
