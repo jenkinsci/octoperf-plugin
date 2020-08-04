@@ -47,8 +47,8 @@ public class OctoPerfTestStep extends Step {
 
   @DataBoundConstructor
   public OctoPerfTestStep(
-    final String credentialsId,
-    final String scenarioId) {
+      final String credentialsId,
+      final String scenarioId) {
     super();
     setCredentialsId(credentialsId);
     setScenarioId(scenarioId);
@@ -91,11 +91,11 @@ public class OctoPerfTestStep extends Step {
     private EnvVars variables = new EnvVars();
 
     protected OctoPerfTestExecution(
-      @Nonnull final StepContext context,
-      @Nonnull final String credentialsId,
-      @Nonnull final String scenarioId,
-      @Nonnull final String serverUrl,
-      @Nonnull final List<? extends TestStopCondition> stopConditions) {
+        @Nonnull final StepContext context,
+        @Nonnull final String credentialsId,
+        @Nonnull final String scenarioId,
+        @Nonnull final String serverUrl,
+        @Nonnull final List<? extends TestStopCondition> stopConditions) {
       super(context);
       this.credentialsId = requireNonNull(credentialsId);
       this.scenarioId = requireNonNull(scenarioId);
@@ -106,11 +106,11 @@ public class OctoPerfTestStep extends Step {
     @Override
     protected Void run() throws Exception {
       final OctoperfBuilder builder = new OctoperfBuilder(
-        this.credentialsId,
-        this.scenarioId
+          this.credentialsId,
+          this.scenarioId,
+          this.stopConditions
       );
       builder.setServerUrl(serverUrl);
-      builder.setStopConditions(stopConditions);
 
       final Run run = getContext().get(Run.class);
       final FilePath workspace = getContext().get(FilePath.class);
@@ -167,8 +167,10 @@ public class OctoPerfTestStep extends Step {
       return "Runs test in OctoPerf Cloud";
     }
 
-    public ListBoxModel doFillCredentialsIdItems(final Object scope) {
-      return OctoperfBuilderDescriptor.getDescriptor().doFillCredentialsIdItems(scope);
+    public ListBoxModel doFillCredentialsIdItems(
+        @QueryParameter("credentialsId") final String credentialsId,
+        final Object scope) {
+      return OctoperfBuilderDescriptor.getDescriptor().doFillCredentialsIdItems(credentialsId, scope);
     }
 
     /**

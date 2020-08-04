@@ -23,9 +23,7 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
@@ -61,22 +59,23 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return "OctoPerf";
   }
 
-  public ListBoxModel doFillCredentialsIdItems(final Object scope) {
+  public ListBoxModel doFillCredentialsIdItems(
+      @QueryParameter("credentialsId") final String credentialsId,
+      final Object scope) {
     final ListBoxModel items = new ListBoxModel();
-    final Set<String> ids = new HashSet<String>();
+    final Set<String> ids = new LinkedHashSet<>();
 
     final Item item = Stapler.getCurrentRequest().findAncestorObject(Item.class);
-    boolean isFirst = true;
     for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, ofNullable(item))) {
       final String id = c.getId();
       if (!ids.contains(id)) {
         final ListBoxModel.Option option =
-            new ListBoxModel.Option(c.getUsername(), id, isFirst);
+            new ListBoxModel.Option(c.getUsername(), id, Objects.equals(id, credentialsId));
         ids.add(id);
         items.add(option);
-        isFirst = false;
       }
     }
+
     return items;
   }
 

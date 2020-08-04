@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static hudson.tasks.BuildStepMonitor.BUILD;
-import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.joda.time.format.DateTimeFormat.forPattern;
@@ -36,19 +36,20 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
   private static final DateTimeFormatter DATE_FORMAT = forPattern("HH:mm:ss");
   public static final long TEN_SECS = 10_000L;
 
-  private final Optional<OctoperfCredential> credentials;
-  private final String scenarioId;
+  private String credentialsId = "";
+  private String scenarioId = "";
   private String serverUrl = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
 
   @DataBoundConstructor
   public OctoperfBuilder(
-    final String credentialsId,
-    final String scenarioId) {
+      final String credentialsId,
+      final String scenarioId,
+      final List<? extends TestStopCondition> stopConditions) {
     super();
-    this.credentials = CREDENTIALS_SERVICE.find(credentialsId);
-    this.scenarioId = requireNonNull(scenarioId);
-    this.serverUrl = requireNonNull(serverUrl);
+    setCredentialsId(credentialsId);
+    setScenarioId(scenarioId);
+    setStopConditions(stopConditions);
   }
 
   @Override
@@ -61,7 +62,17 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
   }
 
   @DataBoundSetter
-  public void setStopConditions(List<? extends TestStopCondition> stopConditions) {
+  public void setScenarioId(final String scenarioId) {
+    this.scenarioId = nullToEmpty(scenarioId);
+  }
+
+  @DataBoundSetter
+  public void setCredentialsId(final String credentialsId) {
+    this.credentialsId = nullToEmpty(credentialsId);
+  }
+
+  @DataBoundSetter
+  public void setStopConditions(final List<? extends TestStopCondition> stopConditions) {
     this.stopConditions = ofNullable(stopConditions).orElse(new ArrayList<>());
   }
 
@@ -80,6 +91,8 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
     @Nonnull final TaskListener listener,
     @Nonnull final EnvVars vars) throws InterruptedException, IOException {
     final String serverUrlConfig = OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL();
+
+    final Optional<OctoperfCredential> credentials = CREDENTIALS_SERVICE.find(credentialsId);
 
     final Callable<Result> build = new OctoPerfBuild(
       listener.getLogger(),

@@ -32,16 +32,16 @@ public class OctoPerfBuilderDSLExtension extends ContextExtensionPoint {
 
       if (credentials.isPresent()) {
         builder = new OctoperfBuilder(
-          context.credentialsId,
-          context.scenarioId
+            context.credentialsId,
+            context.scenarioId,
+            context.getStopConditions()
         );
         builder.setServerUrl(serverUrl);
-        builder.setStopConditions(context.getStopConditions());
       }
 
     } catch (final Exception e) {
       LOGGER.warn("Failed to create OctoPerfBuilder object from Job DSL description: credentialsId=" + context.credentialsId +
-        ", scenarioId =" + context.scenarioId + ", serverUrl=" + serverUrl);
+          ", scenarioId =" + context.scenarioId + ", serverUrl=" + serverUrl);
     } finally {
       return builder;
     }

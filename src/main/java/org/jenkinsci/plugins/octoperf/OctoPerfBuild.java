@@ -133,7 +133,7 @@ public class OctoPerfBuild implements Callable<Result> {
     BenchResultState currentState;
 
     java.util.Optional<DateTime> startTime = empty();
-    while(true) {
+    while (true) {
       Thread.sleep(TEN_SECS);
 
       currentState = BENCH_RESULTS.getState(apiFactory, benchResultId);
@@ -144,7 +144,7 @@ public class OctoPerfBuild implements Callable<Result> {
         }
 
         final DateTime now = DateTime.now();
-        if(!startTime.isPresent()) {
+        if (!startTime.isPresent()) {
           startTime = of(now);
         }
 

@@ -11,7 +11,7 @@ import static okhttp3.RequestBody.create;
 
 final class RetrofitThresholdAlarmService implements ThresholdAlarmService {
   private static final String THRESHOLD_REPORT_ITEM =
-    "{\"@type\":\"ThresholdAlarmReportItem\",\"metric\":{\"@type\":\"MonitoringMetric\",\"benchResultId\":\"%s\", \"filters\":[],\"id\":\"\",\"type\":\"NUMBER_COUNTER\"},\"name\":\"\"}";
+    "{\"@type\":\"ThresholdAlarmReportItem\",\"metric\":{\"@type\":\"HitMetric\",\"benchResultId\":\"%s\",\"config\":null,\"field\":\"value\",\"filters\":[],\"id\":\"MONITORING\",\"scope\":\"PER_SAMPLE\",\"statistic\":\"AVERAGE\",\"type\":\"NUMBER_COUNTER\"},\"name\":\"Threshold alarms\"}";
 
   public boolean hasAlarms(
     final RestApiFactory apiFactory,
