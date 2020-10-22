@@ -95,7 +95,6 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     if (credentials.isPresent()) {
       final RestApiFactory factory = getRestApiFactory(credentials.get());
 
-      final Item item = Stapler.getCurrentRequest().findAncestorObject(Item.class);
       try {
         for (final Workspace workspace : WORKSPACES.getWorkspaces(factory)) {
           final String id = workspace.getId();
