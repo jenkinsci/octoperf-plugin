@@ -6,18 +6,20 @@ import hudson.model.Item;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
+import hudson.util.ListBoxModel.Option;
 import jenkins.model.Jenkins;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.conditions.StopConditionDescriptor;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.jenkinsci.plugins.octoperf.workspace.Workspace;
+import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -25,17 +27,23 @@ import org.kohsuke.stapler.StaplerRequest;
 import java.io.IOException;
 import java.util.*;
 
+import static com.google.common.base.Strings.emptyToNull;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
+import static org.jenkinsci.plugins.octoperf.workspace.WorkspaceService.WORKSPACES;
 
 @Extension
 @Getter
 @Setter
 public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   private static final String ARROW = " => ";
+  /** Used for default options in dropdowns. */
+  protected static final String NONE_ID = "NONE";
+  /** Used for default options in dropdowns. */
+  protected static final String NONE_DISPLAY_TEXT = "None";
 
   private String octoperfURL = DEFAULT_API_URL;
   private String name = "My OctoPerf Account";
@@ -60,8 +68,8 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   }
 
   public ListBoxModel doFillCredentialsIdItems(
-      @QueryParameter("credentialsId") final String credentialsId,
-      final Object scope) {
+    @QueryParameter("credentialsId") final String credentialsId,
+    final Object scope) {
     final ListBoxModel items = new ListBoxModel();
     final Set<String> ids = new LinkedHashSet<>();
 
@@ -69,55 +77,97 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, ofNullable(item))) {
       final String id = c.getId();
       if (!ids.contains(id)) {
-        final ListBoxModel.Option option =
-            new ListBoxModel.Option(c.getUsername(), id, Objects.equals(id, credentialsId));
+        final Option option =
+          new Option(c.getUsername(), id, Objects.equals(id, credentialsId));
         ids.add(id);
         items.add(option);
       }
     }
 
-    return items;
+    return getOptions(items);
   }
 
-  /**
-   * Computes the scenarios list when asked by the UI.
-   *
-   * @param credentialsId credentials id
-   * @return combo box model with all scenarios
-   */
-  public ListBoxModel doFillScenarioIdItems(@QueryParameter("credentialsId") final String credentialsId) {
-    final java.util.Optional<OctoperfCredential> optional;
-    if (credentialsId.isEmpty()) {
-      optional = CREDENTIALS_SERVICE.findFirst();
-    } else {
-      optional = CREDENTIALS_SERVICE.find(credentialsId);
-    }
-
+  public ListBoxModel doFillWorkspaceIdItems(
+    @QueryParameter("credentialsId") final String credentialsId,
+    @QueryParameter("workspaceId") final String workspaceId) {
+    val credentials = getCredential(credentialsId);
     final ListBoxModel items = new ListBoxModel();
-    if (optional.isPresent()) {
-      final OctoperfCredential credentials = optional.get();
-      final String username = credentials.getUsername();
-      final String password = credentials.getPassword().getPlainText();
+    if (credentials.isPresent()) {
+      final RestApiFactory factory = getRestApiFactory(credentials.get());
 
-      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(octoperfURL, System.out);
-      final RestApiFactory apiFactory = pair.getLeft();
-      pair.getRight().onUsernameAndPassword(username, password);
-
+      final Item item = Stapler.getCurrentRequest().findAncestorObject(Item.class);
       try {
-        final List<Triple<Workspace, Project, Scenario>> scenariosByProject = SCENARIOS.getScenariosByProject(apiFactory);
-        for (final Triple<Workspace, Project, Scenario> entry : scenariosByProject) {
-          final Workspace workspace = entry.getLeft();
-          final Project project = entry.getMiddle();
-          final Scenario scenario = entry.getRight();
-          final String displayName = workspace.getName() + ARROW + project.getName() + ARROW + scenario.getName();
-          items.add(displayName, scenario.getId());
+        for (final Workspace workspace : WORKSPACES.getWorkspaces(factory)) {
+          final String id = workspace.getId();
+          final Option option =
+            new Option(workspace.getName(), id, Objects.equals(id, workspaceId));
+          items.add(option);
         }
-      } catch (IOException e) {
+      } catch (final IOException e) {
         items.add("Failed to connect to OctoPerf, please check your credentials. "+e);
         e.printStackTrace();
       }
     }
+
+    return getOptions(items);
+  }
+
+  public ListBoxModel doFillScenarioIdItems(
+    @QueryParameter final String credentialsId,
+    @QueryParameter final String workspaceId,
+    @QueryParameter final String scenarioId) {
+    val credentials = getCredential(credentialsId);
+
+    final ListBoxModel items = new ListBoxModel();
+    if (credentials.isPresent() && ofNullable(emptyToNull(workspaceId)).isPresent()) {
+      final RestApiFactory apiFactory = getRestApiFactory(credentials.get());
+
+      try {
+        final List<Pair<Project, Scenario>> scenariosByProject = SCENARIOS
+          .getScenariosByWorkspace(apiFactory, workspaceId);
+        for (final Pair<Project, Scenario> entry : scenariosByProject) {
+          final Project project = entry.getLeft();
+          final Scenario scenario = entry.getRight();
+          final String displayName = project.getName() + ARROW + scenario.getName();
+          final String id = scenario.getId();
+          final Option option = new Option(displayName, id, Objects.equals(id, scenarioId));
+          items.add(option);
+        }
+      } catch (final IOException e) {
+        items.add("Failed to connect to OctoPerf, please check your credentials. "+e);
+        e.printStackTrace();
+      }
+    }
+
+    return getOptions(items);
+  }
+
+  @NotNull
+  private ListBoxModel getOptions(final ListBoxModel items) {
+    if (items.isEmpty()) {
+      items.add(NONE_DISPLAY_TEXT, NONE_ID);
+    }
     return items;
+  }
+
+
+  private static Optional<OctoperfCredential> getCredential(final String credentialsId) {
+    if (credentialsId.isEmpty()) {
+      return CREDENTIALS_SERVICE.findFirst();
+    }
+    return CREDENTIALS_SERVICE.find(credentialsId);
+  }
+
+  private RestApiFactory getRestApiFactory(final OctoperfCredential credentials) {
+    final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(octoperfURL, System.out);
+    final RestApiFactory factory = pair.getLeft();
+
+    final String username = credentials.getUsername();
+    final String password = credentials.getPassword().getPlainText();
+    final RestClientAuthenticator authenticator = pair.getRight();
+    authenticator.onUsernameAndPassword(username, password);
+
+    return factory;
   }
 
   @Override

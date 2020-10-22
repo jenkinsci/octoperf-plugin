@@ -37,6 +37,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
   public static final long TEN_SECS = 10_000L;
 
   private String credentialsId = "";
+  private String workspaceId = "";
   private String scenarioId = "";
   private String serverUrl = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
@@ -44,10 +45,12 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
   @DataBoundConstructor
   public OctoperfBuilder(
       final String credentialsId,
+      final String workspaceId,
       final String scenarioId,
       final List<? extends TestStopCondition> stopConditions) {
     super();
     setCredentialsId(credentialsId);
+    setWorkspaceId(workspaceId);
     setScenarioId(scenarioId);
     setStopConditions(stopConditions);
   }
@@ -59,6 +62,11 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
 
   public List<? extends TestStopCondition> getStopConditions() {
     return stopConditions;
+  }
+
+  @DataBoundSetter
+  public void setWorkspaceId(final String workspaceId) {
+    this.workspaceId = nullToEmpty(workspaceId);
   }
 
   @DataBoundSetter
@@ -81,7 +89,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
     @Nonnull final Run<?, ?> run,
     @Nonnull final FilePath workspace,
     @Nonnull final Launcher launcher,
-    @Nonnull final TaskListener listener) throws InterruptedException, IOException {
+    @Nonnull final TaskListener listener) {
     perform(run, workspace, listener, new EnvVars());
   }
 
@@ -89,7 +97,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
     @Nonnull final Run<?, ?> run,
     @Nonnull final FilePath workspace,
     @Nonnull final TaskListener listener,
-    @Nonnull final EnvVars vars) throws InterruptedException, IOException {
+    @Nonnull final EnvVars vars) {
     final String serverUrlConfig = OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL();
 
     final Optional<OctoperfCredential> credentials = CREDENTIALS_SERVICE.find(credentialsId);

@@ -33,6 +33,7 @@ public class OctoPerfBuilderDSLExtension extends ContextExtensionPoint {
       if (credentials.isPresent()) {
         builder = new OctoperfBuilder(
             context.credentialsId,
+            "",
             context.scenarioId,
             context.getStopConditions()
         );

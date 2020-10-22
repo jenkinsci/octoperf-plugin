@@ -5,6 +5,9 @@
     <f:entry title="${%Credentials:}">
         <f:select style="width:32em;" field="credentialsId"/>
     </f:entry>
+    <f:entry title="${%Workspace}:" field="workspaceId">
+        <f:select />
+    </f:entry>
     <f:entry title="${%Scenario}:" field="scenarioId">
         <f:select />
     </f:entry>

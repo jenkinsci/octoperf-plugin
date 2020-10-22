@@ -14,11 +14,7 @@ import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.conditions.StopConditionDescriptor;
 import org.jenkinsci.plugins.octoperf.conditions.TestStopCondition;
-import org.jenkinsci.plugins.workflow.steps.Step;
-import org.jenkinsci.plugins.workflow.steps.StepContext;
-import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
-import org.jenkinsci.plugins.workflow.steps.StepExecution;
-import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
+import org.jenkinsci.plugins.workflow.steps.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
@@ -41,16 +37,19 @@ import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RES
 @Setter
 public class OctoPerfTestStep extends Step {
   private String credentialsId = "";
+  private String workspaceId = "";
   private String scenarioId = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
   private String serverUrl = "";
 
   @DataBoundConstructor
   public OctoPerfTestStep(
-      final String credentialsId,
-      final String scenarioId) {
+    final String credentialsId,
+    final String workspaceId,
+    final String scenarioId) {
     super();
     setCredentialsId(credentialsId);
+    setWorkspaceId(workspaceId);
     setScenarioId(scenarioId);
     setServerUrl("");
   }
@@ -58,6 +57,11 @@ public class OctoPerfTestStep extends Step {
   @DataBoundSetter
   public void setCredentialsId(final String credentialsId) {
     this.credentialsId = nullToEmpty(credentialsId);
+  }
+
+  @DataBoundSetter
+  public void setWorkspaceId(final String workspaceId) {
+    this.workspaceId = nullToEmpty(workspaceId);
   }
 
   @DataBoundSetter
@@ -76,14 +80,15 @@ public class OctoPerfTestStep extends Step {
   }
 
   @Override
-  public StepExecution start(final StepContext stepContext) throws Exception {
-    return new OctoPerfTestExecution(stepContext, credentialsId, scenarioId, serverUrl, stopConditions);
+  public StepExecution start(final StepContext stepContext) {
+    return new OctoPerfTestExecution(stepContext, credentialsId, workspaceId, scenarioId, serverUrl, stopConditions);
   }
 
   public static class OctoPerfTestExecution extends SynchronousNonBlockingStepExecution<Void> {
     private static final long serialVersionUID = -3802154812289490186L;
 
     private final String credentialsId;
+    private final String workspaceId;
     private final String scenarioId;
     private final String serverUrl;
     private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
@@ -91,13 +96,15 @@ public class OctoPerfTestStep extends Step {
     private EnvVars variables = new EnvVars();
 
     protected OctoPerfTestExecution(
-        @Nonnull final StepContext context,
-        @Nonnull final String credentialsId,
-        @Nonnull final String scenarioId,
-        @Nonnull final String serverUrl,
-        @Nonnull final List<? extends TestStopCondition> stopConditions) {
+      @Nonnull final StepContext context,
+      @Nonnull final String credentialsId,
+      @Nonnull final String workspaceId,
+      @Nonnull final String scenarioId,
+      @Nonnull final String serverUrl,
+      @Nonnull final List<? extends TestStopCondition> stopConditions) {
       super(context);
       this.credentialsId = requireNonNull(credentialsId);
+      this.workspaceId = nullToEmpty(workspaceId);
       this.scenarioId = requireNonNull(scenarioId);
       this.serverUrl = requireNonNull(serverUrl);
       this.stopConditions = requireNonNull(stopConditions);
@@ -106,9 +113,10 @@ public class OctoPerfTestStep extends Step {
     @Override
     protected Void run() throws Exception {
       final OctoperfBuilder builder = new OctoperfBuilder(
-          this.credentialsId,
-          this.scenarioId,
-          this.stopConditions
+        this.credentialsId,
+        this.workspaceId,
+        this.scenarioId,
+        this.stopConditions
       );
       builder.setServerUrl(serverUrl);
 
@@ -168,19 +176,28 @@ public class OctoPerfTestStep extends Step {
     }
 
     public ListBoxModel doFillCredentialsIdItems(
-        @QueryParameter("credentialsId") final String credentialsId,
-        final Object scope) {
-      return OctoperfBuilderDescriptor.getDescriptor().doFillCredentialsIdItems(credentialsId, scope);
+      @QueryParameter("credentialsId") final String credentialsId,
+      final Object scope) {
+      return OctoperfBuilderDescriptor
+        .getDescriptor()
+        .doFillCredentialsIdItems(credentialsId, scope);
     }
 
-    /**
-     * Computes the scenarios list when asked by the UI.
-     *
-     * @param credentialsId credentials id
-     * @return combo box model with all scenarios
-     */
-    public ListBoxModel doFillScenarioIdItems(@QueryParameter("credentialsId") final String credentialsId) {
-      return OctoperfBuilderDescriptor.getDescriptor().doFillScenarioIdItems(credentialsId);
+    public ListBoxModel doFillWorkspaceIdItems(
+      @QueryParameter("credentialsId") final String credentialsId,
+      @QueryParameter("workspaceId") final String workspaceId) {
+      return OctoperfBuilderDescriptor
+        .getDescriptor()
+        .doFillWorkspaceIdItems(credentialsId, workspaceId);
+    }
+
+    public ListBoxModel doFillScenarioIdItems(
+      @QueryParameter("credentialsId") final String credentialsId,
+      @QueryParameter("workspaceId") final String workspaceId,
+      @QueryParameter("scenarioId") final String scenarioId) {
+      return OctoperfBuilderDescriptor
+        .getDescriptor()
+        .doFillScenarioIdItems(credentialsId, workspaceId, scenarioId);
     }
 
     public List<StopConditionDescriptor> getStopConditionDescriptors() {
