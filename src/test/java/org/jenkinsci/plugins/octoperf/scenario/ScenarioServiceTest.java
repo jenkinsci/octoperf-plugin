@@ -44,18 +44,13 @@ public class ScenarioServiceTest {
   ScenarioApi api;
   @Mock
   ProjectApi projectApi;
-  @Mock
-  WorkspacesApi workspacesApi;
 
   @Before
   public void before() {
     when(retrofit.create(ScenarioApi.class)).thenReturn(api);
     when(retrofit.create(ProjectApi.class)).thenReturn(projectApi);
-    when(retrofit.create(WorkspacesApi.class)).thenReturn(workspacesApi);
     final List<Project> projects = ImmutableList.of(ProjectTest.newInstance());
     when(projectApi.getProjects(anyString())).thenReturn(Calls.response(projects));
-    final List<Workspace> workspaces = ImmutableList.of(WorkspaceTest.newInstance());
-    when(workspacesApi.memberOf()).thenReturn(Calls.response(workspaces));
   }
   
   @Test
@@ -84,7 +79,6 @@ public class ScenarioServiceTest {
     when(api.list(anyString())).thenReturn(Calls.response(ImmutableList.of(SCENARIO)));
     final List<Pair<Project, Scenario>> table = SCENARIOS.getScenariosByWorkspace(retrofit, "workspaceId");
     assertFalse(table.isEmpty());
-    verify(workspacesApi).memberOf();
     verify(projectApi).getProjects(anyString());
     verify(retrofit).create(ScenarioApi.class);
     verify(api).list(anyString());
