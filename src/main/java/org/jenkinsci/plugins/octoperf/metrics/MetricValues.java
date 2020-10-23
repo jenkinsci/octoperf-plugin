@@ -1,13 +1,12 @@
 package org.jenkinsci.plugins.octoperf.metrics;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Value;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.Value;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Value
 public class MetricValues {

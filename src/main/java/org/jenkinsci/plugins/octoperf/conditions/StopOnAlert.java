@@ -13,10 +13,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import static hudson.model.Result.ABORTED;
-import static hudson.model.Result.FAILURE;
-import static hudson.model.Result.SUCCESS;
-import static hudson.model.Result.UNSTABLE;
+import static hudson.model.Result.*;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
 import static org.jenkinsci.plugins.octoperf.threshold.ThresholdAlarmService.THRESHOLD_ALARMS;

@@ -1,8 +1,6 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
-import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 
 import java.io.IOException;
@@ -21,7 +19,7 @@ public interface ScenarioService {
   
   Scenario find(RestApiFactory apiFactory, String id) throws IOException;
   
-  List<Pair<Project, Scenario>> getScenariosByWorkspace(
+  List<Scenario> getScenariosByProject(
     RestApiFactory apiFactory,
     String workspaceId) throws IOException;
 }

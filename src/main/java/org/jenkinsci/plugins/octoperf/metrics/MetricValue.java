@@ -1,11 +1,10 @@
 package org.jenkinsci.plugins.octoperf.metrics;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Value;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Single metric value. Example: Avg Elapsedtime: 5.6s.

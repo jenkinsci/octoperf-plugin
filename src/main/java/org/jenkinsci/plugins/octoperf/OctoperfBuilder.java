@@ -18,7 +18,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +37,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
 
   private String credentialsId = "";
   private String workspaceId = "";
+  private String projectId = "";
   private String scenarioId = "";
   private String serverUrl = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
@@ -46,11 +46,13 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
   public OctoperfBuilder(
       final String credentialsId,
       final String workspaceId,
+      final String projectId,
       final String scenarioId,
       final List<? extends TestStopCondition> stopConditions) {
     super();
     setCredentialsId(credentialsId);
     setWorkspaceId(workspaceId);
+    setProjectId(projectId);
     setScenarioId(scenarioId);
     setStopConditions(stopConditions);
   }
@@ -67,6 +69,11 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
   @DataBoundSetter
   public void setWorkspaceId(final String workspaceId) {
     this.workspaceId = nullToEmpty(workspaceId);
+  }
+
+  @DataBoundSetter
+  public void setProjectId(final String projectId) {
+    this.projectId = nullToEmpty(projectId);
   }
 
   @DataBoundSetter

@@ -7,11 +7,7 @@ import com.google.common.collect.ImmutableList;
 import hudson.model.Item;
 import org.jenkinsci.plugins.octoperf.OctoperfCredential;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static hudson.security.ACL.SYSTEM;
 import static java.util.Optional.empty;

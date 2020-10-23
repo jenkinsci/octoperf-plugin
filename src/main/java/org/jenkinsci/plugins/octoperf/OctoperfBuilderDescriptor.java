@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.octoperf;
 
+import com.google.common.base.Strings;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
@@ -19,7 +20,6 @@ import org.jenkinsci.plugins.octoperf.conditions.StopConditionDescriptor;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.jenkinsci.plugins.octoperf.workspace.Workspace;
-import org.jetbrains.annotations.NotNull;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -27,11 +27,11 @@ import org.kohsuke.stapler.StaplerRequest;
 import java.io.IOException;
 import java.util.*;
 
-import static com.google.common.base.Strings.emptyToNull;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
+import static org.jenkinsci.plugins.octoperf.project.ProjectService.PROJECTS;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.jenkinsci.plugins.octoperf.workspace.WorkspaceService.WORKSPACES;
 
@@ -41,7 +41,7 @@ import static org.jenkinsci.plugins.octoperf.workspace.WorkspaceService.WORKSPAC
 public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
   private static final String ARROW = " => ";
   /** Used for default options in dropdowns. */
-  protected static final String NONE_ID = "NONE";
+  protected static final String NONE_ID = "noneId";
   /** Used for default options in dropdowns. */
   protected static final String NONE_DISPLAY_TEXT = "None";
 
@@ -111,29 +111,24 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return getOptions(items);
   }
 
-  public ListBoxModel doFillScenarioIdItems(
-    @QueryParameter final String credentialsId,
-    @QueryParameter final String workspaceId,
-    @QueryParameter final String scenarioId) {
+  public ListBoxModel doFillProjectIdItems(
+    @QueryParameter("credentialsId") final String credentialsId,
+    @QueryParameter("workspaceId") final String workspaceId,
+    @QueryParameter("projectId") final String projectId) {
     val credentials = getCredential(credentialsId);
-
     final ListBoxModel items = new ListBoxModel();
-    if (credentials.isPresent() && ofNullable(emptyToNull(workspaceId)).isPresent()) {
-      final RestApiFactory apiFactory = getRestApiFactory(credentials.get());
+    if (credentials.isPresent() && isDefined(workspaceId)) {
+      final RestApiFactory factory = getRestApiFactory(credentials.get());
 
       try {
-        final List<Pair<Project, Scenario>> scenariosByProject = SCENARIOS
-          .getScenariosByWorkspace(apiFactory, workspaceId);
-        for (final Pair<Project, Scenario> entry : scenariosByProject) {
-          final Project project = entry.getLeft();
-          final Scenario scenario = entry.getRight();
-          final String displayName = project.getName() + ARROW + scenario.getName();
-          final String id = scenario.getId();
-          final Option option = new Option(displayName, id, Objects.equals(id, scenarioId));
+        for (final Project project : PROJECTS.getProjects(factory, workspaceId)) {
+          final String id = project.getId();
+          final Option option =
+            new Option(project.getName(), id, Objects.equals(id, projectId));
           items.add(option);
         }
       } catch (final IOException e) {
-        items.add("Failed to connect to OctoPerf, please check your credentials. "+e);
+        items.add("Could not list projects. "+e);
         e.printStackTrace();
       }
     }
@@ -141,8 +136,40 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return getOptions(items);
   }
 
-  @NotNull
-  private ListBoxModel getOptions(final ListBoxModel items) {
+  public ListBoxModel doFillScenarioIdItems(
+    @QueryParameter final String credentialsId,
+    @QueryParameter final String projectId,
+    @QueryParameter final String scenarioId) {
+    val credentials = getCredential(credentialsId);
+
+    final ListBoxModel items = new ListBoxModel();
+    if (credentials.isPresent() && isDefined(projectId)) {
+      final RestApiFactory apiFactory = getRestApiFactory(credentials.get());
+
+      try {
+        final List<Scenario> scenariosByProject = SCENARIOS
+          .getScenariosByProject(apiFactory, projectId);
+        for (final Scenario s : scenariosByProject) {
+          final String id = s.getId();
+          items.add(new Option(s.getName(), id, Objects.equals(id, scenarioId)));
+        }
+      } catch (final IOException e) {
+        items.add("Could not list scenarios. "+e);
+        e.printStackTrace();
+      }
+    }
+
+    return getOptions(items);
+  }
+
+  private static boolean isDefined(final String id) {
+    return ofNullable(id)
+      .map(Strings::emptyToNull)
+      .filter(s -> !Objects.equals(s, NONE_ID))
+      .isPresent();
+  }
+
+  private static ListBoxModel getOptions(final ListBoxModel items) {
     if (items.isEmpty()) {
       items.add(NONE_DISPLAY_TEXT, NONE_ID);
     }

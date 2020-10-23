@@ -9,16 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import retrofit2.Call;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

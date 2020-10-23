@@ -2,16 +2,9 @@ package org.jenkinsci.plugins.octoperf.scenario;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.testing.NullPointerTester;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
-import org.jenkinsci.plugins.octoperf.project.Project;
-import org.jenkinsci.plugins.octoperf.project.ProjectApi;
-import org.jenkinsci.plugins.octoperf.project.ProjectTest;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 import org.jenkinsci.plugins.octoperf.report.BenchReportTest;
-import org.jenkinsci.plugins.octoperf.workspace.Workspace;
-import org.jenkinsci.plugins.octoperf.workspace.WorkspaceTest;
-import org.jenkinsci.plugins.octoperf.workspace.WorkspacesApi;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,15 +35,10 @@ public class ScenarioServiceTest {
   RestApiFactory retrofit;
   @Mock
   ScenarioApi api;
-  @Mock
-  ProjectApi projectApi;
 
   @Before
   public void before() {
     when(retrofit.create(ScenarioApi.class)).thenReturn(api);
-    when(retrofit.create(ProjectApi.class)).thenReturn(projectApi);
-    final List<Project> projects = ImmutableList.of(ProjectTest.newInstance());
-    when(projectApi.getProjects(anyString())).thenReturn(Calls.response(projects));
   }
   
   @Test
@@ -77,9 +65,8 @@ public class ScenarioServiceTest {
   @Test
   public void shouldListScenariosPerProject() throws IOException{
     when(api.list(anyString())).thenReturn(Calls.response(ImmutableList.of(SCENARIO)));
-    final List<Pair<Project, Scenario>> table = SCENARIOS.getScenariosByWorkspace(retrofit, "workspaceId");
+    final List<Scenario> table = SCENARIOS.getScenariosByProject(retrofit, "workspaceId");
     assertFalse(table.isEmpty());
-    verify(projectApi).getProjects(anyString());
     verify(retrofit).create(ScenarioApi.class);
     verify(api).list(anyString());
   }

@@ -7,7 +7,6 @@ import hudson.FilePath;
 import hudson.model.Result;
 import hudson.util.Secret;
 import lombok.experimental.FieldDefaults;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
