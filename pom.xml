@@ -19,7 +19,7 @@
 
   <properties>
     <java.level>8</java.level>
-    <commons.compress.version>1.20</commons.compress.version>
+    <commons.compress.version>1.21</commons.compress.version>
     <commons.lang3.version>3.11</commons.lang3.version>
     <commons.io.version>2.7</commons.io.version>
     <credentials.version>2.3.19</credentials.version>
