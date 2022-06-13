@@ -95,7 +95,7 @@ final class RetrofitClientService implements RestClientService {
 
     builder.proxy(new Proxy(HTTP, new InetSocketAddress(cfg.name, cfg.port)));
     final String username = nullToEmpty(cfg.getUserName());
-    final String password = nullToEmpty(cfg.getPassword());
+    final String password = nullToEmpty(cfg.getSecretPassword().getPlainText());
 
     if (isNotEmpty(username) && isNotEmpty(password)) {
       final String credentials = Credentials.basic(username, password);
