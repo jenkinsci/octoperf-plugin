@@ -225,4 +225,11 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <distributionManagement>
+    <repository>
+      <id>central</id>
+      <name>jenkinsci-releases</name>
+      <url>https://repo.jenkins-ci.org/artifactory/releases</url>
+    </repository>
+  </distributionManagement>
 </project>
