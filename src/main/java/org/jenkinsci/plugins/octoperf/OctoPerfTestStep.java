@@ -4,6 +4,7 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
@@ -128,7 +129,8 @@ public class OctoPerfTestStep extends Step {
     public void stop(final Throwable cause) throws Exception {
       getContext().onFailure(cause);
 
-      final OctoperfCredential credentials = CREDENTIALS_SERVICE.find(credentialsId).orElse(null);
+      final Run run = getContext().get(Run.class);
+      final OctoperfCredential credentials = CREDENTIALS_SERVICE.find(credentialsId, run.getParent()).orElse(null);
       final TaskListener listener = getContext().get(TaskListener.class);
 
       final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(serverUrl, listener.getLogger());

@@ -4,9 +4,7 @@ import com.google.common.collect.ImmutableList;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.Result;
-import hudson.model.Run;
-import hudson.model.TaskListener;
+import hudson.model.*;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
@@ -25,6 +23,7 @@ import java.util.concurrent.Callable;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static hudson.tasks.BuildStepMonitor.BUILD;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.joda.time.format.DateTimeFormat.forPattern;
@@ -107,7 +106,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
     @Nonnull final EnvVars vars) {
     final String serverUrlConfig = OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL();
 
-    final Optional<OctoperfCredential> credentials = CREDENTIALS_SERVICE.find(credentialsId);
+    final Optional<OctoperfCredential> credentials = CREDENTIALS_SERVICE.find(credentialsId, run.getParent());
 
     final Callable<Result> build = new OctoPerfBuild(
       listener.getLogger(),

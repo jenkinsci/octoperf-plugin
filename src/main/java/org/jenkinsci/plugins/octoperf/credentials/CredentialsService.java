@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.octoperf.credentials;
 import hudson.model.Item;
 import org.jenkinsci.plugins.octoperf.OctoperfCredential;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public interface CredentialsService {
    * 
    * @return octoperf account, if any
    */
-  Optional<OctoperfCredential> findFirst();
+  Optional<OctoperfCredential> findFirst(@Nullable Item item);
   
   /**
    * Finds the account with the given id.
@@ -31,14 +32,13 @@ public interface CredentialsService {
    * @param id account id
    * @return
    */
-  Optional<OctoperfCredential> find(String id);
+  Optional<OctoperfCredential> find(String id, @Nullable Item item);
   
   /**
    * Lists the credentials available in the given scope.
    * 
    * @param scope credentials scope
-   * @param item item, if any
    * @return
    */
-  List<OctoperfCredential> getCredentials(Object scope, Optional<Item> item);
+  List<OctoperfCredential> getCredentials(Object scope, @Nullable Item item);
 }

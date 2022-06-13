@@ -10,12 +10,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.cloudbees.plugins.credentials.CredentialsScope.SYSTEM;
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -40,27 +42,28 @@ public class JenkinsSecurityTokenServiceTest {
 
   @Test
   public void shouldCreateSingleton() {
-    assertNotNull(CredentialsService.CREDENTIALS_SERVICE);
+    assertNotNull(CREDENTIALS_SERVICE);
   }
 
   @Test
   public void shouldNotFindFirst() {
-    final java.util.Optional<OctoperfCredential> first = service.findFirst();
+    final java.util.Optional<OctoperfCredential> first = service.findFirst(null);
     assertEquals(empty(), first);
   }
 
   @Test
-  public void shouldFindFirst() {
+  public void shouldFindFirst() throws IOException {
     final OctoperfCredential creds = new OctoperfCredentialImpl(SYSTEM, "id", "description", "foo", "bar");
     credentials.getCredentials().add(creds);
-    
-    final java.util.Optional<OctoperfCredential> first = service.findFirst();
+    credentials.save();
+
+    final java.util.Optional<OctoperfCredential> first = service.findFirst(null);
     assertEquals(of(creds), first);
   }
 
   @Test
   public void shouldNotFindById() {
-    final java.util.Optional<OctoperfCredential> any = service.find("any");
+    final java.util.Optional<OctoperfCredential> any = service.find("any", null);
     assertEquals(empty(), any);
   }
 
@@ -69,7 +72,7 @@ public class JenkinsSecurityTokenServiceTest {
     final OctoperfCredential creds = new OctoperfCredentialImpl(SYSTEM, "id", "description", "foo", "bar");
 
     SystemCredentialsProvider.getInstance().getCredentials().add(creds);
-    final java.util.Optional<OctoperfCredential> first = service.find(creds.getId());
+    final java.util.Optional<OctoperfCredential> first = service.find(creds.getId(), null);
     assertEquals(of(creds), first);
   }
 
@@ -80,7 +83,7 @@ public class JenkinsSecurityTokenServiceTest {
     final OctoperfCredential duplicate = new OctoperfCredentialImpl(SYSTEM, "id", "description", "foo", "bar");
     credentials.getCredentials().add(duplicate);
 
-    final List<OctoperfCredential> all = service.getCredentials(SYSTEM, empty());
+    final List<OctoperfCredential> all = service.getCredentials(SYSTEM, null);
     assertEquals(ImmutableList.of(creds), all);
   }
 }

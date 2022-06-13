@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import hudson.model.Item;
 import org.jenkinsci.plugins.octoperf.OctoperfCredential;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static hudson.security.ACL.SYSTEM;
@@ -18,17 +19,17 @@ final class JenkinsCredentialsService implements CredentialsService {
   private static final String DEFAULT_SCOPE = "Global";
 
   @Override
-  public Optional<OctoperfCredential> findFirst() {
-    for(final OctoperfCredential c : getCredentials(DEFAULT_SCOPE, empty())) {
+  public Optional<OctoperfCredential> findFirst(@Nullable final Item item) {
+    for (final OctoperfCredential c : getCredentials(DEFAULT_SCOPE, item)) {
       return of(c);
     }
     return empty();
   }
   
   @Override
-  public Optional<OctoperfCredential> find(final String id) {
-    for(final OctoperfCredential c : getCredentials(DEFAULT_SCOPE, empty())) {
-      if(Objects.equal(c.getId(),id)) {
+  public Optional<OctoperfCredential> find(final String id, @Nullable final Item item) {
+    for (final OctoperfCredential c : getCredentials(DEFAULT_SCOPE, item)) {
+      if (Objects.equal(c.getId(),id)) {
         return of(c);
       }
     }
@@ -36,12 +37,12 @@ final class JenkinsCredentialsService implements CredentialsService {
   }
 
   @Override
-  public List<OctoperfCredential> getCredentials(final Object scope, final java.util.Optional<Item> item) {
-    final List<OctoperfCredential> result = new ArrayList<OctoperfCredential>();
-    final Set<String> ids = new HashSet<String>();
+  public List<OctoperfCredential> getCredentials(final Object scope, @Nullable final Item item) {
+    final List<OctoperfCredential> result = new ArrayList<>();
+    final Set<String> ids = new HashSet<>();
 
     for (final OctoperfCredential c : CredentialsProvider
-        .lookupCredentials(OctoperfCredential.class, item.orElse(null), SYSTEM, NO_REQUIREMENTS)) {
+      .lookupCredentials(OctoperfCredential.class, item, SYSTEM, NO_REQUIREMENTS)) {
       final String id = c.getId();
       if (!ids.contains(id)) {
         result.add(c);

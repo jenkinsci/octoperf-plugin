@@ -27,7 +27,8 @@ public class OctoPerfBuilderDSLExtension extends ContextExtensionPoint {
 
     OctoperfBuilder builder = null;
     try {
-      final Optional<OctoperfCredential> credentials = CREDENTIALS_SERVICE.find(context.credentialsId);
+
+      final Optional<OctoperfCredential> credentials = CREDENTIALS_SERVICE.find(context.credentialsId, null);
       log.info(context.credentialsId + " is " + (credentials.isPresent() ? "" : "not") + " present in credentials");
 
       if (credentials.isPresent()) {

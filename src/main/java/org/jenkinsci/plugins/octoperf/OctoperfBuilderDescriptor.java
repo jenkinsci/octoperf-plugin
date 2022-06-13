@@ -21,7 +21,6 @@ import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.jenkinsci.plugins.octoperf.workspace.Workspace;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
@@ -34,6 +33,7 @@ import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CRED
 import static org.jenkinsci.plugins.octoperf.project.ProjectService.PROJECTS;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.jenkinsci.plugins.octoperf.workspace.WorkspaceService.WORKSPACES;
+import static org.kohsuke.stapler.Stapler.getCurrentRequest;
 
 @Extension
 @Getter
@@ -73,8 +73,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     final ListBoxModel items = new ListBoxModel();
     final Set<String> ids = new LinkedHashSet<>();
 
-    final Item item = Stapler.getCurrentRequest().findAncestorObject(Item.class);
-    for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, ofNullable(item))) {
+    for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, getItem())) {
       final String id = c.getId();
       if (!ids.contains(id)) {
         final Option option =
@@ -178,10 +177,16 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
 
 
   private static Optional<OctoperfCredential> getCredential(final String credentialsId) {
+    final Item item = getItem();
+
     if (credentialsId.isEmpty()) {
-      return CREDENTIALS_SERVICE.findFirst();
+      return CREDENTIALS_SERVICE.findFirst(item);
     }
-    return CREDENTIALS_SERVICE.find(credentialsId);
+    return CREDENTIALS_SERVICE.find(credentialsId, item);
+  }
+
+  private static Item getItem() {
+    return getCurrentRequest().findAncestorObject(Item.class);
   }
 
   private RestApiFactory getRestApiFactory(final OctoperfCredential credentials) {
