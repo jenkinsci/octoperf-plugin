@@ -1,2 +1,2 @@
 release:
-	mvn release:prepare release:perform
+	mvn -X release:prepare release:perform
