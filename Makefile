@@ -1,2 +1,2 @@
 release:
-	release:prepare release:perform
+	mvn release:prepare release:perform
