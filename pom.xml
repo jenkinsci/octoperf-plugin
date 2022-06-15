@@ -26,7 +26,7 @@
     <equals.verifier.version>3.10</equals.verifier.version>
     <guava.version>31.1-jre</guava.version>
     <jackson.version>2.13.3</jackson.version>
-    <jenkins.version>2.332.3</jenkins.version>
+    <jenkins.version>2.332.2</jenkins.version>
     <jobdsl.version>1.79</jobdsl.version>
     <jodatime.version>2.10.14</jodatime.version>
     <kotlin-stdlib.version>1.6.21</kotlin-stdlib.version>
