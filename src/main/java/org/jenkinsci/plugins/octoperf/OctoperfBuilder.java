@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableList;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.*;
+import hudson.model.Result;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import jenkins.tasks.SimpleBuildStep;
@@ -23,7 +25,6 @@ import java.util.concurrent.Callable;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static hudson.tasks.BuildStepMonitor.BUILD;
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
 import static org.joda.time.format.DateTimeFormat.forPattern;
@@ -39,6 +40,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
   private String projectId = "";
   private String scenarioId = "";
   private String serverUrl = "";
+  private String testName = "";
   private List<? extends TestStopCondition> stopConditions = new ArrayList<>();
 
   @DataBoundConstructor
@@ -47,6 +49,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
       final String workspaceId,
       final String projectId,
       final String scenarioId,
+      final String testName,
       final List<? extends TestStopCondition> stopConditions) {
     super();
     setCredentialsId(credentialsId);
@@ -54,6 +57,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
     setProjectId(projectId);
     setScenarioId(scenarioId);
     setStopConditions(stopConditions);
+    setTestName(testName);
   }
 
   @Override
@@ -90,6 +94,11 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
     this.stopConditions = ofNullable(stopConditions).orElse(new ArrayList<>());
   }
 
+  @DataBoundSetter
+  public void setTestName(final String testName) {
+    this.testName = nullToEmpty(testName);
+  }
+
   @Override
   public void perform(
     @Nonnull final Run<?, ?> run,
@@ -113,6 +122,7 @@ public class OctoperfBuilder extends Builder implements SimpleBuildStep {
       credentials.map(OctoperfCredential::getUsername).orElse(""),
       credentials.map(OctoperfCredential::getPassword).orElse(null),
       scenarioId,
+      ofNullable(testName),
       ImmutableList.copyOf(stopConditions),
       workspace,
       serverUrlConfig != null ? serverUrlConfig : serverUrl,

@@ -16,10 +16,11 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static java.util.Optional.empty;
 import static org.jenkinsci.plugins.octoperf.scenario.ScenarioService.SCENARIOS;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,10 +44,10 @@ public class ScenarioServiceTest {
   
   @Test
   public void shouldRun() throws IOException {
-    when(api.run(SCENARIO_ID)).thenReturn(Calls.response(BENCH_REPORT));
-    final BenchReport report = SCENARIOS.startTest(retrofit, SCENARIO_ID);
+    when(api.run(eq(SCENARIO_ID), any())).thenReturn(Calls.response(BENCH_REPORT));
+    final BenchReport report = SCENARIOS.startTest(retrofit, SCENARIO_ID, empty());
     assertSame(BENCH_REPORT, report);
-    verify(api).run(SCENARIO_ID);
+    verify(api).run(SCENARIO_ID, null);
   }
   
   @Test

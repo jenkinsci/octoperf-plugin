@@ -1,19 +1,27 @@
 package org.jenkinsci.plugins.octoperf.scenario;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 final class RetrofitScenarioService implements ScenarioService {
 
 
   @Override
-  public BenchReport startTest(final RestApiFactory apiFactory, final String scenarioId) throws IOException {
+  public BenchReport startTest(
+    final RestApiFactory apiFactory,
+    final String scenarioId,
+    final Optional<String> name) throws IOException {
     final ScenarioApi api = apiFactory.create(ScenarioApi.class);
-    return api.run(scenarioId).execute().body();
+    return api.run(
+      scenarioId,
+      name.map(Strings::emptyToNull).orElse(null)
+    ).execute().body();
   }
 
   @Override

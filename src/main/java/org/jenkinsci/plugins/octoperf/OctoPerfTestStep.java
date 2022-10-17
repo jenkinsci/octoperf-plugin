@@ -113,6 +113,7 @@ public class OctoPerfTestStep extends Step {
         "",
         "",
         this.scenarioId,
+        "",
         this.stopConditions
       );
       builder.setServerUrl(serverUrl);

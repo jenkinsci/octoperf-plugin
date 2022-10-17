@@ -13,7 +13,6 @@ import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.conditions.TestStopCondition;
 import org.jenkinsci.plugins.octoperf.metrics.MetricValues;
 import org.jenkinsci.plugins.octoperf.project.Project;
-import org.jenkinsci.plugins.octoperf.project.ProjectService;
 import org.jenkinsci.plugins.octoperf.report.BenchReport;
 import org.jenkinsci.plugins.octoperf.result.BenchResult;
 import org.jenkinsci.plugins.octoperf.result.BenchResultState;
@@ -26,6 +25,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
@@ -39,6 +39,7 @@ import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.junit.JUnitReportService.JUNIT_REPORTS;
 import static org.jenkinsci.plugins.octoperf.log.LogService.LOGS;
 import static org.jenkinsci.plugins.octoperf.metrics.MetricsService.METRICS;
+import static org.jenkinsci.plugins.octoperf.project.ProjectService.PROJECTS;
 import static org.jenkinsci.plugins.octoperf.report.BenchReportService.BENCH_REPORTS;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultService.BENCH_RESULTS;
 import static org.jenkinsci.plugins.octoperf.result.BenchResultState.ABORTED;
@@ -56,6 +57,7 @@ public class OctoPerfBuild implements Callable<Result> {
   String username;
   Secret password;
   String scenarioId;
+  Optional<String> testName;
   List<? extends TestStopCondition> stopConditions;
   FilePath workspace;
   String serverUrl;
@@ -66,6 +68,7 @@ public class OctoPerfBuild implements Callable<Result> {
     final String username,
     final Secret password,
     final String scenarioId,
+    final Optional<String> testName,
     final List<? extends TestStopCondition> stopConditions,
     final FilePath workspace,
     final String serverUrl,
@@ -75,6 +78,7 @@ public class OctoPerfBuild implements Callable<Result> {
     this.username = requireNonNull(username);
     this.password = requireNonNull(password);
     this.scenarioId = requireNonNull(scenarioId);
+    this.testName = requireNonNull(testName);
     this.stopConditions = requireNonNull(stopConditions);
     this.workspace = requireNonNull(workspace);
     this.serverUrl = requireNonNull(serverUrl);
@@ -106,14 +110,14 @@ public class OctoPerfBuild implements Callable<Result> {
 
     BenchReport report;
     try {
-      report = SCENARIOS.startTest(apiFactory, scenarioId);
+      report = SCENARIOS.startTest(apiFactory, scenarioId, testName);
       benchResult = BENCH_RESULTS.find(apiFactory, report.getBenchResultId());
 
       properties.put("PROJECT_ID", benchResult.getDesignProjectId());
 
       logger.println("Starting test...");
 
-      final Project project = ProjectService.PROJECTS.find(apiFactory, scenario.getProjectId());
+      final Project project = PROJECTS.find(apiFactory, scenario.getProjectId());
       logger.println("Bench Report: " + BENCH_REPORTS.getReportUrl(
         serverUrl,
         project.getWorkspaceId(),

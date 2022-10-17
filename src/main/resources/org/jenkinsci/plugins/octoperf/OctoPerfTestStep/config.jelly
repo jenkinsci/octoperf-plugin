@@ -2,21 +2,25 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
          xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
-    <f:entry title="${%Credentials:}">
-        <f:select style="width:32em;" field="credentialsId"/>
+    <f:entry title="${%Credentials:}" field="credentialsId">
+        <f:select style="width:32em;" />
     </f:entry>
     <f:entry title="${%Workspace}:" field="workspaceId">
         <f:select />
     </f:entry>
-        <f:entry title="${%Project}:" field="projectId">
-            <f:select />
-        </f:entry>
+    <f:entry title="${%Project}:" field="projectId">
+        <f:select />
+    </f:entry>
     <f:entry title="${%Scenario}:" field="scenarioId">
         <f:select />
     </f:entry>
+    <f:entry title="${%Test Name}:" field="testName">
+        <f:textbox />
+    </f:entry>
 
-  <f:entry title="Stop Conditions" field="stopConditions">
-    <f:hetero-list name="stopConditions" hasHeader="true"
+  <f:entry title="Stop Conditions">
+    <f:hetero-list field="stopConditions"
+                   name="stopConditions" hasHeader="true"
                    descriptors="${descriptor.getStopConditionDescriptors()}"
                    items="${instance.stopConditions}"
                    addCaption="${%New Stop Condition}"/>

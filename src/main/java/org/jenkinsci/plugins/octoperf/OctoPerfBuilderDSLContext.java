@@ -11,5 +11,6 @@ import java.util.List;
 public class OctoPerfBuilderDSLContext implements Context {
     String credentialsId = "";
     String scenarioId = "";
+    String testName = "";
     List<? extends TestStopCondition> stopConditions = new ArrayList<>();
 }

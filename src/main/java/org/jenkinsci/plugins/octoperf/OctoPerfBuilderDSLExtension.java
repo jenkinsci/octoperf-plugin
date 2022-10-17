@@ -37,6 +37,7 @@ public class OctoPerfBuilderDSLExtension extends ContextExtensionPoint {
             "",
             "",
             context.scenarioId,
+            context.testName,
             context.getStopConditions()
         );
         builder.setServerUrl(serverUrl);

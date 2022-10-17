@@ -5,6 +5,7 @@ import org.jenkinsci.plugins.octoperf.report.BenchReport;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides common operations on scenarios.
@@ -15,7 +16,9 @@ import java.util.List;
 public interface ScenarioService {
   ScenarioService SCENARIOS = new RetrofitScenarioService();
   
-  BenchReport startTest(RestApiFactory apiFactory, String scenarioId) throws IOException;
+  BenchReport startTest(RestApiFactory apiFactory,
+                        String scenarioId,
+                        Optional<String> testName) throws IOException;
   
   Scenario find(RestApiFactory apiFactory, String id) throws IOException;
   
