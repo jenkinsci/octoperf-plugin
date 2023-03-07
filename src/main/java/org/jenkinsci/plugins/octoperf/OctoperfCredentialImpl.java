@@ -57,12 +57,7 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
     @POST
     public FormValidation doTestLogin(
       @QueryParameter("username") final String username,
-      @QueryParameter("password") final Secret password,
-      @AncestorInPath final Item item) throws IOException {
-      if (item == null) { // no context
-        return ok();
-      }
-      item.checkPermission(CONFIGURE);
+      @QueryParameter("password") final Secret password) throws IOException {
 
       if (fixEmptyAndTrim(username) == null || fixEmptyAndTrim(password.getPlainText()) == null) {
         return error("username and/or password cannot be empty");
