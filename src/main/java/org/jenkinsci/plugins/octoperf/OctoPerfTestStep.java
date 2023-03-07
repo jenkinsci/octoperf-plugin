@@ -4,7 +4,7 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.Job;
+import hudson.model.Item;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.util.ListBoxModel;
@@ -16,9 +16,11 @@ import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.conditions.StopConditionDescriptor;
 import org.jenkinsci.plugins.octoperf.conditions.TestStopCondition;
 import org.jenkinsci.plugins.workflow.steps.*;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import java.util.Set;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.ImmutableList.of;
+import static hudson.model.Item.CONFIGURE;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
@@ -174,38 +177,43 @@ public class OctoPerfTestStep extends Step {
       return "Runs test in OctoPerf Cloud";
     }
 
+    @POST
     public ListBoxModel doFillCredentialsIdItems(
+      @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,
       final Object scope) {
       return OctoperfBuilderDescriptor
         .getDescriptor()
-        .doFillCredentialsIdItems(credentialsId, scope);
+        .doFillCredentialsIdItems(context, credentialsId, scope);
     }
 
     public ListBoxModel doFillWorkspaceIdItems(
+      @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,
       @QueryParameter final String workspaceId) {
       return OctoperfBuilderDescriptor
         .getDescriptor()
-        .doFillWorkspaceIdItems(credentialsId, workspaceId);
+        .doFillWorkspaceIdItems(context, credentialsId, workspaceId);
     }
 
     public ListBoxModel doFillProjectIdItems(
+      @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,
       @QueryParameter final String workspaceId,
       @QueryParameter final String projectId) {
       return OctoperfBuilderDescriptor
         .getDescriptor()
-        .doFillProjectIdItems(credentialsId, workspaceId, projectId);
+        .doFillProjectIdItems(context, credentialsId, workspaceId, projectId);
     }
 
     public ListBoxModel doFillScenarioIdItems(
+      @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,
       @QueryParameter final String projectId,
       @QueryParameter final String scenarioId) {
       return OctoperfBuilderDescriptor
         .getDescriptor()
-        .doFillScenarioIdItems(credentialsId, projectId, scenarioId);
+        .doFillScenarioIdItems(context, credentialsId, projectId, scenarioId);
     }
 
     public List<StopConditionDescriptor> getStopConditionDescriptors() {

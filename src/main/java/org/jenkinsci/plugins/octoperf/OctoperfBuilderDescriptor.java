@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.octoperf;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.google.common.base.Strings;
 import hudson.Extension;
 import hudson.model.AbstractProject;
@@ -20,13 +21,18 @@ import org.jenkinsci.plugins.octoperf.conditions.StopConditionDescriptor;
 import org.jenkinsci.plugins.octoperf.project.Project;
 import org.jenkinsci.plugins.octoperf.scenario.Scenario;
 import org.jenkinsci.plugins.octoperf.workspace.Workspace;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.verb.POST;
 
 import java.io.IOException;
 import java.util.*;
 
+import static com.cloudbees.plugins.credentials.CredentialsProvider.USE_ITEM;
+import static hudson.model.Item.CONFIGURE;
 import static java.util.Optional.ofNullable;
+import static jenkins.model.Jenkins.ADMINISTER;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 import static org.jenkinsci.plugins.octoperf.constants.Constants.DEFAULT_API_URL;
 import static org.jenkinsci.plugins.octoperf.credentials.CredentialsService.CREDENTIALS_SERVICE;
@@ -67,9 +73,13 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return "OctoPerf";
   }
 
+  @POST
   public ListBoxModel doFillCredentialsIdItems(
+    @AncestorInPath final Item context,
     @QueryParameter("credentialsId") final String credentialsId,
     final Object scope) {
+    checkPermission(context);
+
     final ListBoxModel items = new ListBoxModel();
     final Set<String> ids = new LinkedHashSet<>();
 
@@ -86,9 +96,13 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return getOptions(items);
   }
 
+  @POST
   public ListBoxModel doFillWorkspaceIdItems(
+    @AncestorInPath final Item context,
     @QueryParameter("credentialsId") final String credentialsId,
     @QueryParameter("workspaceId") final String workspaceId) {
+    checkPermission(context);
+
     val credentials = getCredential(credentialsId);
     final ListBoxModel items = new ListBoxModel();
     if (credentials.isPresent()) {
@@ -110,10 +124,14 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return getOptions(items);
   }
 
+  @POST
   public ListBoxModel doFillProjectIdItems(
+    @AncestorInPath final Item context,
     @QueryParameter("credentialsId") final String credentialsId,
     @QueryParameter("workspaceId") final String workspaceId,
     @QueryParameter("projectId") final String projectId) {
+    checkPermission(context);
+
     val credentials = getCredential(credentialsId);
     final ListBoxModel items = new ListBoxModel();
     if (credentials.isPresent() && isDefined(workspaceId)) {
@@ -135,10 +153,14 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return getOptions(items);
   }
 
+  @POST
   public ListBoxModel doFillScenarioIdItems(
+    @AncestorInPath final Item context,
     @QueryParameter final String credentialsId,
     @QueryParameter final String projectId,
     @QueryParameter final String scenarioId) {
+    checkPermission(context);
+
     val credentials = getCredential(credentialsId);
 
     final ListBoxModel items = new ListBoxModel();
@@ -159,6 +181,14 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     }
 
     return getOptions(items);
+  }
+
+  private static void checkPermission(final Item context) {
+    if (context == null) {
+      Jenkins.get().checkPermission(ADMINISTER);
+    } else {
+      context.checkPermission(USE_ITEM);
+    }
   }
 
   private static boolean isDefined(final String id) {
