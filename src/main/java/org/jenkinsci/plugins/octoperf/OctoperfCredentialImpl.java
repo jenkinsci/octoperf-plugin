@@ -12,11 +12,15 @@ import org.jenkinsci.plugins.octoperf.workspace.Workspace;
 import org.jenkinsci.plugins.octoperf.workspace.WorkspacesApi;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 import retrofit2.Response;
 
 import java.io.IOException;
 import java.util.List;
 
+import static hudson.Util.fixEmptyAndTrim;
+import static hudson.util.FormValidation.error;
+import static hudson.util.FormValidation.ok;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
 
 /**
@@ -47,19 +51,28 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
     }
 
     // Used by global.jelly to authenticate User key
+    @POST
     public FormValidation doTestLogin(
       @QueryParameter("username") final String username,
       @QueryParameter("password") final Secret password) throws IOException {
-      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL(), System.out);
+      if (fixEmptyAndTrim(username) == null || fixEmptyAndTrim(password.getPlainText()) == null) {
+        return error("username and/or password cannot be empty");
+      }
+
+      final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(
+        OctoperfBuilderDescriptor.getDescriptor().getOctoperfURL(),
+        System.out
+      );
+
       pair.getRight().onUsernameAndPassword(username, password.getPlainText());
       // Get projects to test authentication
       final RestApiFactory factory = pair.getLeft();
       final WorkspacesApi api = factory.create(WorkspacesApi.class);
       final Response<List<Workspace>> response = api.memberOf().execute();
       if(response.isSuccessful()) {
-        return FormValidation.ok("Successfully logged in!");
+        return ok("Successfully logged in!");
       }
-      return FormValidation.error(new IOException(response.toString()), "Login failed!");
+      return error(new IOException(response.toString()), "Login failed!");
     }
   }
 }
