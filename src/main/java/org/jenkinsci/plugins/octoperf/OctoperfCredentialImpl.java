@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.octoperf;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import hudson.Extension;
+import hudson.model.Item;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
 import org.apache.commons.lang3.tuple.Pair;
@@ -10,6 +11,7 @@ import org.jenkinsci.plugins.octoperf.client.RestApiFactory;
 import org.jenkinsci.plugins.octoperf.client.RestClientAuthenticator;
 import org.jenkinsci.plugins.octoperf.workspace.Workspace;
 import org.jenkinsci.plugins.octoperf.workspace.WorkspacesApi;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.verb.POST;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static hudson.Util.fixEmptyAndTrim;
+import static hudson.model.Item.CONFIGURE;
 import static hudson.util.FormValidation.error;
 import static hudson.util.FormValidation.ok;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
@@ -54,7 +57,13 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
     @POST
     public FormValidation doTestLogin(
       @QueryParameter("username") final String username,
-      @QueryParameter("password") final Secret password) throws IOException {
+      @QueryParameter("password") final Secret password,
+      @AncestorInPath final Item item) throws IOException {
+      if (item == null) { // no context
+        return ok();
+      }
+      item.checkPermission(CONFIGURE);
+
       if (fixEmptyAndTrim(username) == null || fixEmptyAndTrim(password.getPlainText()) == null) {
         return error("username and/or password cannot be empty");
       }
