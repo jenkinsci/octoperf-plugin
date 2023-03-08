@@ -20,6 +20,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -184,6 +185,7 @@ public class OctoPerfTestStep extends Step {
         .doFillCredentialsIdItems(context, credentialsId, scope);
     }
 
+    @POST
     public ListBoxModel doFillWorkspaceIdItems(
       @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,
@@ -193,6 +195,7 @@ public class OctoPerfTestStep extends Step {
         .doFillWorkspaceIdItems(context, credentialsId, workspaceId);
     }
 
+    @POST
     public ListBoxModel doFillProjectIdItems(
       @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,
@@ -203,6 +206,7 @@ public class OctoPerfTestStep extends Step {
         .doFillProjectIdItems(context, credentialsId, workspaceId, projectId);
     }
 
+    @POST
     public ListBoxModel doFillScenarioIdItems(
       @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,

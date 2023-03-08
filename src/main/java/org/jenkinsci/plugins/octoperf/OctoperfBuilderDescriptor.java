@@ -32,6 +32,7 @@ import java.util.*;
 
 import static com.cloudbees.plugins.credentials.CredentialsProvider.USE_ITEM;
 import static hudson.model.Item.EXTENDED_READ;
+import static hudson.security.Permission.CONFIGURE;
 import static java.util.Optional.ofNullable;
 import static jenkins.model.Jenkins.ADMINISTER;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
@@ -136,7 +137,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter("workspaceId") final String workspaceId,
     @QueryParameter("projectId") final String projectId) {
     final ListBoxModel items = new ListBoxModel();
-    if (!hasAnyPermission(context, USE_ITEM)) {
+    if (!hasAnyPermission(context, CONFIGURE)) {
       return items;
     }
 
@@ -167,7 +168,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter final String projectId,
     @QueryParameter final String scenarioId) {
     final ListBoxModel items = new ListBoxModel();
-    if (!hasAnyPermission(context, USE_ITEM)) {
+    if (!hasAnyPermission(context, CONFIGURE)) {
       return items;
     }
 
@@ -197,13 +198,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
       return Jenkins.get().hasPermission(ADMINISTER);
     }
 
-    for (final Permission permission : permissions) {
-      if (context.hasPermission(permission)) {
-        return true;
-      }
-    }
-
-    return false;
+    return context.hasAnyPermission(permissions);
   }
 
   private static boolean isDefined(final String id) {
