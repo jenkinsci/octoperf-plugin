@@ -80,7 +80,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     final Object scope) {
     final ListBoxModel result = new StandardListBoxModel()
       .includeCurrentValue(credentialsId);
-    if (!hasPermission(context, EXTENDED_READ, USE_ITEM)) {
+    if (!hasAnyPermission(context, EXTENDED_READ, USE_ITEM)) {
       return result;
     }
 
@@ -105,7 +105,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter("credentialsId") final String credentialsId,
     @QueryParameter("workspaceId") final String workspaceId) {
     final ListBoxModel items = new ListBoxModel();
-    if (!hasPermission(context, USE_ITEM)) {
+    if (!hasAnyPermission(context, USE_ITEM)) {
       return items;
     }
 
@@ -136,7 +136,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter("workspaceId") final String workspaceId,
     @QueryParameter("projectId") final String projectId) {
     final ListBoxModel items = new ListBoxModel();
-    if (!hasPermission(context, USE_ITEM)) {
+    if (!hasAnyPermission(context, USE_ITEM)) {
       return items;
     }
 
@@ -167,7 +167,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter final String projectId,
     @QueryParameter final String scenarioId) {
     final ListBoxModel items = new ListBoxModel();
-    if (!hasPermission(context, USE_ITEM)) {
+    if (!hasAnyPermission(context, USE_ITEM)) {
       return items;
     }
 
@@ -192,18 +192,18 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return getOptions(items);
   }
 
-  private static boolean hasPermission(final Item context, final Permission... permissions) {
+  private static boolean hasAnyPermission(final Item context, final Permission... permissions) {
     if (context == null) {
       return Jenkins.get().hasPermission(ADMINISTER);
     }
 
     for (final Permission permission : permissions) {
-      if (!context.hasPermission(permission)) {
-        return false;
+      if (context.hasPermission(permission)) {
+        return true;
       }
     }
 
-    return true;
+    return false;
   }
 
   private static boolean isDefined(final String id) {
