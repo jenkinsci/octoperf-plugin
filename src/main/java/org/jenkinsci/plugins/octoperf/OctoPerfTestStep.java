@@ -20,7 +20,6 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import java.util.Set;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.ImmutableList.of;
-import static hudson.model.Item.CONFIGURE;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
@@ -177,7 +175,6 @@ public class OctoPerfTestStep extends Step {
       return "Runs test in OctoPerf Cloud";
     }
 
-    @POST
     public ListBoxModel doFillCredentialsIdItems(
       @AncestorInPath final Item context,
       @QueryParameter final String credentialsId,

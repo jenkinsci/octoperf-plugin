@@ -1,10 +1,11 @@
 package org.jenkinsci.plugins.octoperf;
 
-import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.google.common.base.Strings;
 import hudson.Extension;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
+import hudson.security.Permission;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
@@ -30,7 +31,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.cloudbees.plugins.credentials.CredentialsProvider.USE_ITEM;
-import static hudson.model.Item.CONFIGURE;
+import static hudson.model.Item.EXTENDED_READ;
 import static java.util.Optional.ofNullable;
 import static jenkins.model.Jenkins.ADMINISTER;
 import static org.jenkinsci.plugins.octoperf.client.RestClientService.CLIENTS;
@@ -73,14 +74,16 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return "OctoPerf";
   }
 
-  @POST
   public ListBoxModel doFillCredentialsIdItems(
     @AncestorInPath final Item context,
     @QueryParameter("credentialsId") final String credentialsId,
     final Object scope) {
-    checkPermission(context);
+    final ListBoxModel result = new StandardListBoxModel()
+      .includeCurrentValue(credentialsId);
+    if (!hasPermission(context, EXTENDED_READ, USE_ITEM)) {
+      return result;
+    }
 
-    final ListBoxModel items = new ListBoxModel();
     final Set<String> ids = new LinkedHashSet<>();
 
     for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, getItem())) {
@@ -89,11 +92,11 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
         final Option option =
           new Option(c.getUsername(), id, Objects.equals(id, credentialsId));
         ids.add(id);
-        items.add(option);
+        result.add(option);
       }
     }
 
-    return getOptions(items);
+    return getOptions(result);
   }
 
   @POST
@@ -101,10 +104,12 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @AncestorInPath final Item context,
     @QueryParameter("credentialsId") final String credentialsId,
     @QueryParameter("workspaceId") final String workspaceId) {
-    checkPermission(context);
+    final ListBoxModel items = new ListBoxModel();
+    if (!hasPermission(context, USE_ITEM)) {
+      return items;
+    }
 
     val credentials = getCredential(credentialsId);
-    final ListBoxModel items = new ListBoxModel();
     if (credentials.isPresent()) {
       final RestApiFactory factory = getRestApiFactory(credentials.get());
 
@@ -130,10 +135,12 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter("credentialsId") final String credentialsId,
     @QueryParameter("workspaceId") final String workspaceId,
     @QueryParameter("projectId") final String projectId) {
-    checkPermission(context);
+    final ListBoxModel items = new ListBoxModel();
+    if (!hasPermission(context, USE_ITEM)) {
+      return items;
+    }
 
     val credentials = getCredential(credentialsId);
-    final ListBoxModel items = new ListBoxModel();
     if (credentials.isPresent() && isDefined(workspaceId)) {
       final RestApiFactory factory = getRestApiFactory(credentials.get());
 
@@ -159,11 +166,13 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter final String credentialsId,
     @QueryParameter final String projectId,
     @QueryParameter final String scenarioId) {
-    checkPermission(context);
+    final ListBoxModel items = new ListBoxModel();
+    if (!hasPermission(context, USE_ITEM)) {
+      return items;
+    }
 
     val credentials = getCredential(credentialsId);
 
-    final ListBoxModel items = new ListBoxModel();
     if (credentials.isPresent() && isDefined(projectId)) {
       final RestApiFactory apiFactory = getRestApiFactory(credentials.get());
 
@@ -183,12 +192,18 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     return getOptions(items);
   }
 
-  private static void checkPermission(final Item context) {
+  private static boolean hasPermission(final Item context, final Permission... permissions) {
     if (context == null) {
-      Jenkins.get().checkPermission(ADMINISTER);
-    } else {
-      context.checkPermission(USE_ITEM);
+      return Jenkins.get().hasPermission(ADMINISTER);
     }
+
+    for (final Permission permission : permissions) {
+      if (!context.hasPermission(permission)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private static boolean isDefined(final String id) {
