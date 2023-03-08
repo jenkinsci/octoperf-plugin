@@ -106,7 +106,7 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     @QueryParameter("credentialsId") final String credentialsId,
     @QueryParameter("workspaceId") final String workspaceId) {
     final ListBoxModel items = new ListBoxModel();
-    if (!hasAnyPermission(context, USE_ITEM)) {
+    if (!hasAnyPermission(context, CONFIGURE)) {
       return items;
     }
 
