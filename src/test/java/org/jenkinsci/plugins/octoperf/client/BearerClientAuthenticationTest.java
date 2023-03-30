@@ -1,7 +1,6 @@
 package org.jenkinsci.plugins.octoperf.client;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.net.HttpHeaders;
 import okhttp3.Interceptor;
 import okhttp3.Protocol;
 import okhttp3.Request;
@@ -20,6 +19,7 @@ import retrofit2.mock.Calls;
 
 import java.io.IOException;
 
+import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -59,7 +59,7 @@ public class BearerClientAuthenticationTest {
   }
 
   @Test
-  public void shouldNotAuthenticateWithoutUsername() throws IOException {
+  public void shouldNotAuthenticateWithoutUsername() {
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
     authenticator.onLogout();
     assertNull(authenticator.authenticate(null, response));
@@ -67,7 +67,7 @@ public class BearerClientAuthenticationTest {
   }
 
   @Test
-  public void shouldNotAuthenticateWithoutCredentials() throws IOException {
+  public void shouldNotAuthenticateWithoutCredentials() {
     final Call<SecurityToken> call = Calls.failure(new IOException());
     when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
@@ -76,16 +76,28 @@ public class BearerClientAuthenticationTest {
   }
 
   @Test
-  public void shouldAuthenticate() throws IOException {
+  public void shouldAuthenticateWithLoginAndPassword() throws IOException {
     final Call<SecurityToken> call = Calls.response(new SecurityToken("id"));
     when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
     final Request request = authenticator.authenticate(null, response);
     assertNotNull(request);
-    assertEquals("Bearer id", request.header(HttpHeaders.AUTHORIZATION));
+    assertEquals("Bearer id", request.header(AUTHORIZATION));
     when(chain.request()).thenReturn(request);
     authenticator.intercept(chain);
     verify(chain).proceed(captor.capture());
-    assertEquals("Bearer id", captor.getValue().header(HttpHeaders.AUTHORIZATION));
+    assertEquals("Bearer id", captor.getValue().header(AUTHORIZATION));
+  }
+
+  @Test
+  public void shouldAuthenticateWithApiKey() throws IOException {
+    authenticator.onUsernameAndPassword("", PASSWORD);
+    final Request request = authenticator.authenticate(null, response);
+    assertNotNull(request);
+    assertEquals("Bearer password", request.header(AUTHORIZATION));
+    when(chain.request()).thenReturn(request);
+    authenticator.intercept(chain);
+    verify(chain).proceed(captor.capture());
+    assertEquals("Bearer password", captor.getValue().header(AUTHORIZATION));
   }
 }

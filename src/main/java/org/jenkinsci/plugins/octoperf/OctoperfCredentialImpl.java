@@ -59,8 +59,9 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
       @QueryParameter("password") final Secret password) throws IOException {
       Jenkins.get().checkPermission(ADMINISTER);
 
-      if (fixEmptyAndTrim(username) == null || fixEmptyAndTrim(password.getPlainText()) == null) {
-        return error("username and/or password cannot be empty");
+      final String plainPwd = password.getPlainText();
+      if (fixEmptyAndTrim(plainPwd) == null) {
+        return error("password cannot be empty");
       }
 
       final Pair<RestApiFactory, RestClientAuthenticator> pair = CLIENTS.create(
@@ -68,7 +69,7 @@ public class OctoperfCredentialImpl extends UsernamePasswordCredentialsImpl impl
         System.out
       );
 
-      pair.getRight().onUsernameAndPassword(username, password.getPlainText());
+      pair.getRight().onUsernameAndPassword(username, plainPwd);
       // Get projects to test authentication
       final RestApiFactory factory = pair.getLeft();
       final WorkspacesApi api = factory.create(WorkspacesApi.class);

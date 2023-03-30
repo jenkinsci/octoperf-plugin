@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.octoperf;
 
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import hudson.Extension;
 import hudson.model.AbstractProject;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.cloudbees.plugins.credentials.CredentialsProvider.USE_ITEM;
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static hudson.model.Item.EXTENDED_READ;
 import static hudson.security.Permission.CONFIGURE;
 import static java.util.Optional.ofNullable;
@@ -90,8 +92,9 @@ public class OctoperfBuilderDescriptor extends BuildStepDescriptor<Builder> {
     for (final OctoperfCredential c : CREDENTIALS_SERVICE.getCredentials(scope, getItem())) {
       final String id = c.getId();
       if (!ids.contains(id)) {
+        final String name = firstNonNull(Strings.emptyToNull(c.getUsername()), c.getId());
         final Option option =
-          new Option(c.getUsername(), id, Objects.equals(id, credentialsId));
+          new Option(name, id, Objects.equals(id, credentialsId));
         ids.add(id);
         result.add(option);
       }
