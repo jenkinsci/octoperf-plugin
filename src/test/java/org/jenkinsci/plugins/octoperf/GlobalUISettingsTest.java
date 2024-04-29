@@ -1,8 +1,8 @@
 package org.jenkinsci.plugins.octoperf;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlElement;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class GlobalUISettingsTest {
   }
 
   @Test
-  public void shouldTestOctoperfUrl() throws SAXException,IOException,Exception {
+  public void shouldTestOctoperfUrl() throws Exception {
     final HtmlElement octperfURL = settings.getElementByName("_.octoperfURL");
     octperfURL.setAttribute("value", DEFAULT_API_URL);
     final HtmlForm submit = settings.getFormByName("config");

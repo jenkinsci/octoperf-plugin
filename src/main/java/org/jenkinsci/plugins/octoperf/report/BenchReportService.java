@@ -15,5 +15,6 @@ public interface BenchReportService {
   String getReportUrl(
     String serverUrl,
     String workspaceId,
-    BenchReport report);
+    String projectId,
+    String reportId);
 }

@@ -27,13 +27,13 @@ public class BenchReportServiceTest {
   
   @Test
   public void shouldGetBenchReportsSaas() {
-    final String reportUrl = BENCH_REPORTS.getReportUrl(DEFAULT_API_URL, "workspaceId", REPORT);
-    assertEquals("https://api.octoperf.com/app/#/app/workspace/workspaceId/project/projectId/analysis/id", reportUrl);
+    final String reportUrl = BENCH_REPORTS.getReportUrl(DEFAULT_API_URL, "workspaceId", REPORT.getProjectId(), REPORT.getId());
+    assertEquals("https://api.octoperf.com/ui/workspace/workspaceId/project/projectId/analysis/report/id", reportUrl);
   }
 
   @Test
   public void shouldGetBenchReportsEnterprise() {
-    final String reportUrl = BENCH_REPORTS.getReportUrl("http://localhost:8090", "workspaceId", REPORT);
-    assertEquals("http://localhost:8090/app/#/app/workspace/workspaceId/project/projectId/analysis/id", reportUrl);
+    final String reportUrl = BENCH_REPORTS.getReportUrl("http://localhost:8090", "workspaceId", REPORT.getProjectId(), REPORT.getId());
+    assertEquals("http://localhost:8090/ui/workspace/workspaceId/project/projectId/analysis/report/id", reportUrl);
   }
 }

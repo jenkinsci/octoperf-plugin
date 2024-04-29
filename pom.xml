@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.40</version>
+    <version>4.79</version>
     <relativePath />
   </parent>
   <groupId>org.jenkinsci.plugins</groupId>
@@ -19,23 +19,25 @@
 
   <properties>
     <java.level>8</java.level>
-    <commons.compress.version>1.21</commons.compress.version>
-    <commons.lang3.version>3.12.0</commons.lang3.version>
-    <commons.io.version>2.11.0</commons.io.version>
-    <credentials.version>2.6.2</credentials.version>
+    <commons.compress.version>1.26.1</commons.compress.version>
+    <commons.lang3.version>3.14.0</commons.lang3.version>
+    <commons.io.version>2.16.1</commons.io.version>
+    <credentials.version>1143.vb_e8b_b_ceee347</credentials.version>
     <equals.verifier.version>3.10</equals.verifier.version>
-    <guava.version>31.1-jre</guava.version>
-    <jackson.version>2.14.2</jackson.version>
-    <jenkins.version>2.332.2</jenkins.version>
-    <jobdsl.version>1.79</jobdsl.version>
-    <jodatime.version>2.10.14</jodatime.version>
+    <guava.version>33.1.0-jre</guava.version>
+    <jackson.version>2.17.0</jackson.version>
+    <jenkins.version>2.414.3</jenkins.version>
+    <jobdsl.version>1.87</jobdsl.version>
+    <jodatime.version>2.12.7</jodatime.version>
     <kotlin-stdlib.version>1.6.21</kotlin-stdlib.version>
-    <lombok.version>1.18.24</lombok.version>
-    <mockito.version>4.6.1</mockito.version>
+    <lombok.version>1.18.32</lombok.version>
+    <mockito.version>5.11.0</mockito.version>
     <okhttp.version>4.10.0</okhttp.version>
-    <retrofit2.version>2.9.0</retrofit2.version>
-    <workflow.api.version>2.24</workflow.api.version>
-    <structs.version>1.24</structs.version>
+    <retrofit2.version>2.11.0</retrofit2.version>
+    <workflow-step-api.version>657.v03b_e8115821b_</workflow-step-api.version>
+    <structs.version>337.v1b_04ea_4df7c8</structs.version>
+    <commons-codec.version>1.17.0</commons-codec.version>
+    <error_prone_annotations.version>2.27.0</error_prone_annotations.version>
   </properties>
 
   <profiles>
@@ -61,6 +63,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.google.errorprone</groupId>
+      <artifactId>error_prone_annotations</artifactId>
+      <version>${error_prone_annotations.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>${commons-codec.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib-common</artifactId>
       <version>${kotlin-stdlib.version}</version>
@@ -84,7 +96,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-step-api</artifactId>
-      <version>${workflow.api.version}</version>
+      <version>${workflow-step-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
