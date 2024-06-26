@@ -34,7 +34,7 @@
     <okhttp.version>4.10.0</okhttp.version>
     <retrofit2.version>2.11.0</retrofit2.version>
     <workflow-step-api.version>657.v03b_e8115821b_</workflow-step-api.version>
-    <structs.version>337.v1b_04ea_4df7c8</structs.version>
+    <structs.version>338.v848422169819</structs.version>
     <commons-codec.version>1.17.0</commons-codec.version>
     <error_prone_annotations.version>2.27.0</error_prone_annotations.version>
   </properties>
