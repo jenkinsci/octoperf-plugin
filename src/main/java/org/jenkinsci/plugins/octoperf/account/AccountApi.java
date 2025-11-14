@@ -24,5 +24,5 @@ public interface AccountApi {
    */
   @POST("/public/users/login")
   @FormUrlEncoded
-  Call<SecurityToken> login(@Field("username") String username, @Field("password") String password);
+  Call<LoginResult> login(@Field("username") String username, @Field("password") String password);
 }

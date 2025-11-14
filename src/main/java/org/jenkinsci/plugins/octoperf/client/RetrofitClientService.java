@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.octoperf.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import hudson.ProxyConfiguration;
 import jenkins.model.Jenkins;
 import okhttp3.Authenticator;
@@ -9,6 +10,8 @@ import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jenkinsci.plugins.octoperf.account.AccountApi;
+import org.jenkinsci.plugins.octoperf.account.LoginFailed;
+import org.jenkinsci.plugins.octoperf.account.LoginSuccessful;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -42,6 +45,9 @@ final class RetrofitClientService implements RestClientService {
 
     final ObjectMapper mapper = new ObjectMapper();
     mapper.findAndRegisterModules();
+    mapper.registerSubtypes(new NamedType(LoginSuccessful.class, "LoginSuccessful"));
+    mapper.registerSubtypes(new NamedType(LoginFailed.class, "LoginFailed"));
+
 
     final Retrofit unauthenticatedClient = new Retrofit
       .Builder()

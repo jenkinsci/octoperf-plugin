@@ -6,6 +6,8 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jenkinsci.plugins.octoperf.account.AccountApi;
+import org.jenkinsci.plugins.octoperf.account.LoginResult;
+import org.jenkinsci.plugins.octoperf.account.LoginSuccessful;
 import org.jenkinsci.plugins.octoperf.account.SecurityToken;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +25,7 @@ import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static retrofit2.mock.Calls.response;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BearerClientAuthenticationTest {
@@ -68,7 +71,7 @@ public class BearerClientAuthenticationTest {
 
   @Test
   public void shouldNotAuthenticateWithoutCredentials() {
-    final Call<SecurityToken> call = Calls.failure(new IOException());
+    final Call<LoginResult> call = Calls.failure(new IOException());
     when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
     assertNull(authenticator.authenticate(null, response));
@@ -77,7 +80,7 @@ public class BearerClientAuthenticationTest {
 
   @Test
   public void shouldAuthenticateWithLoginAndPassword() throws IOException {
-    final Call<SecurityToken> call = Calls.response(new SecurityToken("id"));
+    final Call<LoginResult> call = response(new LoginSuccessful(new SecurityToken("id")));
     when(accountApi.login(USERNAME, PASSWORD)).thenReturn(call);
     authenticator.onUsernameAndPassword(USERNAME, PASSWORD);
     final Request request = authenticator.authenticate(null, response);
